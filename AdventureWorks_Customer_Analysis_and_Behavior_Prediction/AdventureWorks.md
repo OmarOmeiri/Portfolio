@@ -52,7 +52,7 @@ opts <- options()
 
 1 - Customer demographic data (Not all of them have bought AdventureWorks products).<br>
 2 - Average monthly spend by customer.<br>
-3 - Binary table indicating wether the customer has bought a bike or not (a customer that didn't buy a bike directly from AW could have a positive Monthly average spend by buying AW's products from a reseller).<br>
+3 - Binary table indicating whether the customer has bought a bike or not (a customer that didn't buy a bike directly from AW could have a positive Monthly average spend by buying AW's products from a reseller).<br>
 
 
 ```R
