@@ -266,6 +266,105 @@ head(multi_df_long, 20)
 
 
 ```R
+plot_duda <- function(col, reorder = F, levels = F, title = '', ylab = 'Quantidade', xlab = '', legend_lab = '', width = 7, height = 7){
+    
+    options(repr.plot.width = width, repr.plot.height = height)
+    
+    tbl <- data.frame(with(duda, table(eval(parse(text = col)))))
+    tbl$pct <- round((tbl$Freq / sum(tbl$Freq))*100, 2) 
+    tbl <- tbl[!(tbl[,1]==""), ]
+    
+    if (reorder == T){
+        
+        tbl$Var1 <- fct_rev(fct_reorder(tbl$Var1, tbl$Freq))
+        }
+    
+    if (levels == T){
+        
+        tbl$Var1 <- factor(tbl$Var1, levels = levels)
+    }
+    
+    
+
+    print(ggplot(tbl, aes(x = Var1, y = Freq, fill = Var1)) + 
+        geom_col(position = 'identity') +
+        ylab(ylab) + 
+        xlab(xlab) +
+        labs(fill = legend_lab) +
+        ggtitle(title) +
+        theme(axis.text.x = element_blank()) +
+        geom_text(aes(label = paste(tbl$pct,'%')), position = position_dodge(width = .9), vjust = -.5))
+    return(tbl)
+
+}
+```
+
+
+```R
+plot_multi <- function(col, reorder = F, levels = F, title = '', ylab = 'Quantidade', xlab = '', legend_lab = '', width = 7, height = 7){
+    
+    options(repr.plot.width = width, repr.plot.height = height)
+    
+    temp_df <- na.exclude(subset(multi_df_long, startsWith(multi_df_long$key, col)))
+    
+    tbl <- data.frame(with(temp_df, table(value)))
+    tbl$pct <- round((tbl$Freq / sum(tbl$Freq)) * 100,2)
+    tbl <- tbl[!(tbl[,1]==""), ]
+    
+    if (reorder == T){
+        
+        tbl$value <- fct_rev(fct_reorder(tbl$value, tbl$Freq))
+        }
+    
+    if (levels == T){
+        
+        tbl$value <- factor(tbl$value, levels = levels)
+    }
+    
+    
+
+    print(ggplot(tbl, aes(x = value, y = Freq, fill = value)) + 
+        geom_col(position = 'identity') +
+        ylab(ylab) + 
+        xlab(xlab) +
+        labs(fill = legend_lab) +
+        ggtitle(title) +
+        theme(axis.text.x = element_blank()) +
+        geom_text(aes(label = paste(tbl$pct,'%')), position = position_dodge(width = .9), vjust = -.5))
+    return(tbl)
+
+}
+```
+
+
+```R
+plot_duda('faixa_etaria', reorder = T, title = 'Faixa Etária')
+```
+
+
+<table>
+<caption>A data.frame: 5 × 3</caption>
+<thead>
+	<tr><th scope=col>Var1</th><th scope=col>Freq</th><th scope=col>pct</th></tr>
+	<tr><th scope=col>&lt;fct&gt;</th><th scope=col>&lt;int&gt;</th><th scope=col>&lt;dbl&gt;</th></tr>
+</thead>
+<tbody>
+	<tr><td>até 17 anos    </td><td>  9</td><td> 3.41</td></tr>
+	<tr><td>18-29 anos     </td><td>129</td><td>48.86</td></tr>
+	<tr><td>30-45 anos     </td><td> 67</td><td>25.38</td></tr>
+	<tr><td>46-60 anos     </td><td> 53</td><td>20.08</td></tr>
+	<tr><td>61 anos ou mais</td><td>  6</td><td> 2.27</td></tr>
+</tbody>
+</table>
+
+
+
+
+![png](output_13_1.png)
+
+
+
+```R
 duda$faixa_etaria <- factor(duda$faixa_etaria, levels = c('até 17 anos', '18-29 anos', '30-45 anos', '46-60 anos', '61 anos ou mais'))
 
 ggplot(duda, aes(x = factor(faixa_etaria), fill = factor(genero))) + 
@@ -280,7 +379,7 @@ ggplot(duda, aes(x = factor(faixa_etaria), fill = factor(genero))) +
     “Ignoring unknown parameters: binwidth, bins, pad”
 
 
-![png](output_11_1.png)
+![png](output_14_1.png)
 
 
 
@@ -297,19 +396,26 @@ with(duda, table(genero, faixa_etaria))
 
 
 ```R
-ggplot(duda, aes(x = factor(genero), fill = factor(genero))) + 
-    geom_histogram(stat = 'count', position = 'identity') +
-    ylab('Quantidade') + 
-    xlab('Faixa Etária') +
-    labs(fill = 'Gênero') +
-    ggtitle('Gênero')
+plot_duda('genero', reorder = T, title = 'Gênero')
 ```
 
-    Warning message:
-    “Ignoring unknown parameters: binwidth, bins, pad”
+
+<table>
+<caption>A data.frame: 2 × 3</caption>
+<thead>
+	<tr><th scope=col>Var1</th><th scope=col>Freq</th><th scope=col>pct</th></tr>
+	<tr><th scope=col>&lt;fct&gt;</th><th scope=col>&lt;int&gt;</th><th scope=col>&lt;dbl&gt;</th></tr>
+</thead>
+<tbody>
+	<tr><td>feminino </td><td>174</td><td>65.91</td></tr>
+	<tr><td>masculino</td><td> 90</td><td>34.09</td></tr>
+</tbody>
+</table>
 
 
-![png](output_13_1.png)
+
+
+![png](output_16_1.png)
 
 
 
@@ -325,75 +431,26 @@ with(duda, table(genero))
 
 
 ```R
-duda$regiao <- fct_rev(reorder(duda$regiao, duda$regiao,FUN=length))
-
-ggplot(duda, aes(x = factor(regiao), fill = factor(regiao))) + 
-    geom_histogram(stat = 'count', position = 'identity') +
-    ylab('Quantidade') + 
-    xlab('') +
-    labs(fill = '') +
-    ggtitle('Região') +
-    theme(axis.text.x = element_text(angle = 90))
-```
-
-    Warning message:
-    “Ignoring unknown parameters: binwidth, bins, pad”
-
-
-![png](output_15_1.png)
-
-
-
-```R
-with(duda, table(regiao))
+plot_duda('regiao', reorder = T, title = 'Região')
 ```
 
 
-    regiao
-                    Curitiba                 exterior Fora do estado do Paraná 
-                         237                        6                        5 
-      Outra cidade do Paraná     Região Metropolitana 
-                           8                        8 
+<table>
+<caption>A data.frame: 5 × 3</caption>
+<thead>
+	<tr><th scope=col>Var1</th><th scope=col>Freq</th><th scope=col>pct</th></tr>
+	<tr><th scope=col>&lt;fct&gt;</th><th scope=col>&lt;int&gt;</th><th scope=col>&lt;dbl&gt;</th></tr>
+</thead>
+<tbody>
+	<tr><td>Curitiba                </td><td>237</td><td>89.77</td></tr>
+	<tr><td>Outra cidade do Paraná  </td><td>  8</td><td> 3.03</td></tr>
+	<tr><td>Região Metropolitana    </td><td>  8</td><td> 3.03</td></tr>
+	<tr><td>exterior                </td><td>  6</td><td> 2.27</td></tr>
+	<tr><td>Fora do estado do Paraná</td><td>  5</td><td> 1.89</td></tr>
+</tbody>
+</table>
 
 
-
-```R
-options(repr.plot.width = 10)
-
-duda$ocupacao <- fct_rev(reorder(duda$ocupacao, duda$ocupacao,FUN=length))
-
-ggplot(duda, aes(x = factor(ocupacao), fill = factor(ocupacao))) + 
-    geom_histogram(stat = 'count', position = 'identity') +
-    ylab('Quantidade') + 
-    xlab('') +
-    labs(fill = '') +
-    ggtitle('Ocupação') +
-    theme(axis.text.x = element_blank())
-```
-
-    Warning message:
-    “Ignoring unknown parameters: binwidth, bins, pad”
-
-
-![png](output_17_1.png)
-
-
-
-```R
-options(opts)
-duda$renda_familiar <- factor(duda$renda_familiar, levels = c('até 2.000', '2.000 a 5.000', '5.000 a 10.000', '10.000 a 15.000', 'mais de 15.000'))
-
-ggplot(duda, aes(x = factor(renda_familiar), fill = factor(renda_familiar))) + 
-    geom_histogram(stat = 'count', position = 'identity') +
-    ylab('Quantidade') + 
-    xlab('') +
-    labs(fill = '') +
-    ggtitle('Renda Familiar') +
-    theme(axis.text.x = element_blank())
-```
-
-    Warning message:
-    “Ignoring unknown parameters: binwidth, bins, pad”
 
 
 ![png](output_18_1.png)
@@ -401,19 +458,29 @@ ggplot(duda, aes(x = factor(renda_familiar), fill = factor(renda_familiar))) +
 
 
 ```R
-
-
-ggplot(duda, aes(x = factor(gosta_compras), fill = factor(gosta_compras))) + 
-    geom_histogram(stat = 'count', position = 'identity') +
-    ylab('Quantidade') + 
-    xlab('') +
-    labs(fill = '') +
-    ggtitle('Gosta de fazer compras?') +
-    theme(axis.text.x = element_blank())
+plot_duda('ocupacao', reorder = T, width = 10, title = 'Ocupação')
 ```
 
-    Warning message:
-    “Ignoring unknown parameters: binwidth, bins, pad”
+
+<table>
+<caption>A data.frame: 8 × 3</caption>
+<thead>
+	<tr><th scope=col>Var1</th><th scope=col>Freq</th><th scope=col>pct</th></tr>
+	<tr><th scope=col>&lt;fct&gt;</th><th scope=col>&lt;int&gt;</th><th scope=col>&lt;dbl&gt;</th></tr>
+</thead>
+<tbody>
+	<tr><td>falta de tempo                           </td><td>90</td><td>34.09</td></tr>
+	<tr><td>não tenho dificuldades para fazer compras</td><td>59</td><td>22.35</td></tr>
+	<tr><td>tenho preguiça de ir até as lojas        </td><td>54</td><td>20.45</td></tr>
+	<tr><td>não gosto de ir em shoppings             </td><td>17</td><td> 6.44</td></tr>
+	<tr><td>falta de estacionamento nos locais       </td><td>17</td><td> 6.44</td></tr>
+	<tr><td>distância grande das lojas que gosto     </td><td>14</td><td> 5.30</td></tr>
+	<tr><td>não gosto de ter contato com vendedores  </td><td>10</td><td> 3.79</td></tr>
+	<tr><td>não gosto de ir ao supermercado          </td><td> 3</td><td> 1.14</td></tr>
+</tbody>
+</table>
+
+
 
 
 ![png](output_19_1.png)
@@ -421,45 +488,53 @@ ggplot(duda, aes(x = factor(gosta_compras), fill = factor(gosta_compras))) +
 
 
 ```R
-duda$dificuldade_compra <- fct_rev(reorder(duda$dificuldade_compra, duda$dificuldade_compra,FUN=length))
-
-
-options(repr.plot.width = 10)
-ggplot(duda, aes(x = factor(dificuldade_compra), fill = factor(dificuldade_compra))) + 
-    geom_histogram(stat = 'count', position = 'identity') +
-    ylab('Quantidade') + 
-    xlab('') +
-    labs(fill = '') +
-    ggtitle('Dificuldade de Compra') +
-    theme(axis.text.x = element_blank())
+plot_duda('renda_familiar', levels = c('até 2.000', '2.000 a 5.000', '5.000 a 10.000', '10.000 a 15.000', 'mais de 15.000'), title = 'Renda Familiar')
 ```
 
-    Warning message:
-    “Ignoring unknown parameters: binwidth, bins, pad”
+    Warning message in if (levels == T) {:
+    “the condition has length > 1 and only the first element will be used”
 
 
-![png](output_20_1.png)
+<table>
+<caption>A data.frame: 5 × 3</caption>
+<thead>
+	<tr><th scope=col>Var1</th><th scope=col>Freq</th><th scope=col>pct</th></tr>
+	<tr><th scope=col>&lt;fct&gt;</th><th scope=col>&lt;int&gt;</th><th scope=col>&lt;dbl&gt;</th></tr>
+</thead>
+<tbody>
+	<tr><td>até 2.000      </td><td>  5</td><td> 1.89</td></tr>
+	<tr><td>2.000 a 5.000  </td><td> 17</td><td> 6.44</td></tr>
+	<tr><td>5.000 a 10.000 </td><td> 35</td><td>13.26</td></tr>
+	<tr><td>10.000 a 15.000</td><td> 37</td><td>14.02</td></tr>
+	<tr><td>mais de 15.000 </td><td>170</td><td>64.39</td></tr>
+</tbody>
+</table>
+
+
+
+
+![png](output_20_2.png)
 
 
 
 ```R
-tipo_loja <- na.exclude(subset(multi_df_long, startsWith(multi_df_long$key, 'tipo_loja')))
-
-tipo_loja$value <- fct_rev(reorder(tipo_loja$value, tipo_loja$value,FUN=length))
-
-
-options(repr.plot.width = 10)
-ggplot(tipo_loja, aes(x = factor(value), fill = factor(value))) + 
-    geom_histogram(stat = 'count', position = 'identity') +
-    ylab('Quantidade') + 
-    xlab('') +
-    labs(fill = '') +
-    ggtitle('Que tipo de loja você mais gosta?') +
-    theme(axis.text.x = element_blank())
+plot_duda('gosta_compras', title = 'Gosta de fazer compras?')
 ```
 
-    Warning message:
-    “Ignoring unknown parameters: binwidth, bins, pad”
+
+<table>
+<caption>A data.frame: 2 × 3</caption>
+<thead>
+	<tr><th scope=col>Var1</th><th scope=col>Freq</th><th scope=col>pct</th></tr>
+	<tr><th scope=col>&lt;fct&gt;</th><th scope=col>&lt;int&gt;</th><th scope=col>&lt;dbl&gt;</th></tr>
+</thead>
+<tbody>
+	<tr><td>não</td><td> 20</td><td> 7.58</td></tr>
+	<tr><td>sim</td><td>244</td><td>92.42</td></tr>
+</tbody>
+</table>
+
+
 
 
 ![png](output_21_1.png)
@@ -467,26 +542,29 @@ ggplot(tipo_loja, aes(x = factor(value), fill = factor(value))) +
 
 
 ```R
-
-
-
-fonte_info <- na.exclude(subset(multi_df_long, startsWith(multi_df_long$key, 'fonte')))
-
-fonte_info$value <- fct_rev(reorder(fonte_info$value, fonte_info$value,FUN=length))
-
-
-options(repr.plot.width = 10)
-ggplot(fonte_info, aes(x = factor(value), fill = factor(value))) + 
-    geom_histogram(stat = 'count', position = 'identity') +
-    ylab('Quantidade') + 
-    xlab('') +
-    labs(fill = '') +
-    ggtitle('Como é a sua relação com as lojas onde gosta de comprar na internet?') +
-    theme(axis.text.x = element_blank())
+plot_duda('dificuldade_compra', width = 10, title = 'Dificuldade de Compra')
 ```
 
-    Warning message:
-    “Ignoring unknown parameters: binwidth, bins, pad”
+
+<table>
+<caption>A data.frame: 8 × 3</caption>
+<thead>
+	<tr><th scope=col>Var1</th><th scope=col>Freq</th><th scope=col>pct</th></tr>
+	<tr><th scope=col>&lt;fct&gt;</th><th scope=col>&lt;int&gt;</th><th scope=col>&lt;dbl&gt;</th></tr>
+</thead>
+<tbody>
+	<tr><td>falta de tempo                           </td><td>90</td><td>34.09</td></tr>
+	<tr><td>não tenho dificuldades para fazer compras</td><td>59</td><td>22.35</td></tr>
+	<tr><td>tenho preguiça de ir até as lojas        </td><td>54</td><td>20.45</td></tr>
+	<tr><td>falta de estacionamento nos locais       </td><td>17</td><td> 6.44</td></tr>
+	<tr><td>não gosto de ir em shoppings             </td><td>17</td><td> 6.44</td></tr>
+	<tr><td>distância grande das lojas que gosto     </td><td>14</td><td> 5.30</td></tr>
+	<tr><td>não gosto de ter contato com vendedores  </td><td>10</td><td> 3.79</td></tr>
+	<tr><td>não gosto de ir ao supermercado          </td><td> 3</td><td> 1.14</td></tr>
+</tbody>
+</table>
+
+
 
 
 ![png](output_22_1.png)
@@ -494,26 +572,31 @@ ggplot(fonte_info, aes(x = factor(value), fill = factor(value))) +
 
 
 ```R
-
-
-
-consideracao <- na.exclude(subset(multi_df_long, startsWith(multi_df_long$key, 'consid')))
-
-consideracao$value <- fct_rev(reorder(consideracao$value, consideracao$value,FUN=length))
-
-
-options(repr.plot.width = 10)
-ggplot(consideracao, aes(x = factor(value), fill = factor(value))) + 
-    geom_histogram(stat = 'count', position = 'identity') +
-    ylab('Quantidade') + 
-    xlab('') +
-    labs(fill = '') +
-    ggtitle('O que você leva em consideração na hora de escolher uma loja?') +
-    theme(axis.text.x = element_blank())
+plot_multi('tipo_loja', reorder = T, width = 10, title = 'Tipo de Loja')
 ```
 
-    Warning message:
-    “Ignoring unknown parameters: binwidth, bins, pad”
+
+<table>
+<caption>A data.frame: 10 × 3</caption>
+<thead>
+	<tr><th scope=col>value</th><th scope=col>Freq</th><th scope=col>pct</th></tr>
+	<tr><th scope=col>&lt;fct&gt;</th><th scope=col>&lt;int&gt;</th><th scope=col>&lt;dbl&gt;</th></tr>
+</thead>
+<tbody>
+	<tr><td>brinquedos          </td><td> 15</td><td> 2.06</td></tr>
+	<tr><td>eletrodomêsticos    </td><td>  8</td><td> 1.10</td></tr>
+	<tr><td>esportes            </td><td> 74</td><td>10.15</td></tr>
+	<tr><td>livrarias           </td><td> 66</td><td> 9.05</td></tr>
+	<tr><td>móveis/ decoração   </td><td> 35</td><td> 4.80</td></tr>
+	<tr><td>outros              </td><td> 22</td><td> 3.02</td></tr>
+	<tr><td>produtos eletrônicos</td><td> 43</td><td> 5.90</td></tr>
+	<tr><td>roupas              </td><td>230</td><td>31.55</td></tr>
+	<tr><td>sapatos             </td><td>127</td><td>17.42</td></tr>
+	<tr><td>supermercado        </td><td>109</td><td>14.95</td></tr>
+</tbody>
+</table>
+
+
 
 
 ![png](output_23_1.png)
@@ -521,23 +604,33 @@ ggplot(consideracao, aes(x = factor(value), fill = factor(value))) +
 
 
 ```R
-relacao <- na.exclude(subset(multi_df_long, startsWith(multi_df_long$key, 'relac')))
-
-relacao$value <- fct_rev(reorder(relacao$value, relacao$value,FUN=length))
-
-
-options(repr.plot.width = 10)
-ggplot(relacao, aes(x = factor(value), fill = factor(value))) + 
-    geom_histogram(stat = 'count', position = 'identity') +
-    ylab('Quantidade') + 
-    xlab('') +
-    labs(fill = '') +
-    ggtitle('O que você leva em consideração na hora de escolher uma loja?') +
-    theme(axis.text.x = element_blank())
+plot_multi('fonte', reorder = T, width = 11, title = 'Fonte de Informação')
 ```
 
-    Warning message:
-    “Ignoring unknown parameters: binwidth, bins, pad”
+
+<table>
+<caption>A data.frame: 12 × 3</caption>
+<thead>
+	<tr><th scope=col>value</th><th scope=col>Freq</th><th scope=col>pct</th></tr>
+	<tr><th scope=col>&lt;fct&gt;</th><th scope=col>&lt;int&gt;</th><th scope=col>&lt;dbl&gt;</th></tr>
+</thead>
+<tbody>
+	<tr><td>amigos/ colegas                    </td><td> 89</td><td>10.80</td></tr>
+	<tr><td>blogueiras/os                      </td><td> 67</td><td> 8.13</td></tr>
+	<tr><td>email marketing                    </td><td> 14</td><td> 1.70</td></tr>
+	<tr><td>outros                             </td><td>  4</td><td> 0.49</td></tr>
+	<tr><td>pesquisando na internet            </td><td>150</td><td>18.20</td></tr>
+	<tr><td>propagandas em revista/jornal      </td><td> 15</td><td> 1.82</td></tr>
+	<tr><td>propagandas redes sociais          </td><td>145</td><td>17.60</td></tr>
+	<tr><td>seguindo as lojas nas redes sociais</td><td>144</td><td>17.48</td></tr>
+	<tr><td>sites de promoção                  </td><td> 45</td><td> 5.46</td></tr>
+	<tr><td>televisão                          </td><td> 11</td><td> 1.33</td></tr>
+	<tr><td>vitrines                           </td><td> 97</td><td>11.77</td></tr>
+	<tr><td>WhatsApp                           </td><td> 43</td><td> 5.22</td></tr>
+</tbody>
+</table>
+
+
 
 
 ![png](output_24_1.png)
@@ -545,19 +638,33 @@ ggplot(relacao, aes(x = factor(value), fill = factor(value))) +
 
 
 ```R
-duda$meio_preferido <- fct_rev(reorder(duda$meio_preferido, duda$meio_preferido,FUN=length))
-
-ggplot(duda, aes(x = meio_preferido, fill = meio_preferido)) + 
-    geom_histogram(stat = 'count', position = 'identity') +
-    ylab('Quantidade') + 
-    xlab('') +
-    labs(fill = '') +
-    ggtitle('Qual o seu meio preferido para fazer compras?') +
-    theme(axis.text.x = element_blank())
+plot_multi('consid', reorder = T, title = 'O que você leva em consideração na hora de escolher uma loja?', width = 11)
 ```
 
-    Warning message:
-    “Ignoring unknown parameters: binwidth, bins, pad”
+
+<table>
+<caption>A data.frame: 12 × 3</caption>
+<thead>
+	<tr><th scope=col>value</th><th scope=col>Freq</th><th scope=col>pct</th></tr>
+	<tr><th scope=col>&lt;fct&gt;</th><th scope=col>&lt;int&gt;</th><th scope=col>&lt;dbl&gt;</th></tr>
+</thead>
+<tbody>
+	<tr><td>confiança na marca/produto                    </td><td>129</td><td>12.26</td></tr>
+	<tr><td>diferentes opções de entrega do produto       </td><td> 19</td><td> 1.81</td></tr>
+	<tr><td>experiencia de compra na loja                 </td><td>104</td><td> 9.89</td></tr>
+	<tr><td>informações sobre o produto                   </td><td> 76</td><td> 7.22</td></tr>
+	<tr><td>localização da loja                           </td><td> 89</td><td> 8.46</td></tr>
+	<tr><td>padronização do produto em relação a numeração</td><td> 24</td><td> 2.28</td></tr>
+	<tr><td>presença nas mídias sociais                   </td><td> 24</td><td> 2.28</td></tr>
+	<tr><td>produto personalizado/ exclusivo              </td><td> 47</td><td> 4.47</td></tr>
+	<tr><td>promoção                                      </td><td>125</td><td>11.88</td></tr>
+	<tr><td>qualidade do atendimento                      </td><td>121</td><td>11.50</td></tr>
+	<tr><td>qualidade do produto                          </td><td>234</td><td>22.24</td></tr>
+	<tr><td>venda online                                  </td><td> 60</td><td> 5.70</td></tr>
+</tbody>
+</table>
+
+
 
 
 ![png](output_25_1.png)
@@ -565,21 +672,28 @@ ggplot(duda, aes(x = meio_preferido, fill = meio_preferido)) +
 
 
 ```R
-#papel_internet
-
-duda$papel_internet <- fct_rev(reorder(duda$papel_internet, duda$papel_internet,FUN=length))
-
-ggplot(duda, aes(x = papel_internet, fill = papel_internet)) + 
-    geom_histogram(stat = 'count', position = 'identity') +
-    ylab('Quantidade') + 
-    xlab('') +
-    labs(fill = '') +
-    ggtitle('Qual o papel da internet na hora de fazer compras?') +
-    theme(axis.text.x = element_blank())
+plot_multi('relac', reorder = T, title = 'O que você leva em consideração na hora de escolher uma loja?', width = 10)
 ```
 
-    Warning message:
-    “Ignoring unknown parameters: binwidth, bins, pad”
+
+<table>
+<caption>A data.frame: 7 × 3</caption>
+<thead>
+	<tr><th scope=col>value</th><th scope=col>Freq</th><th scope=col>pct</th></tr>
+	<tr><th scope=col>&lt;fct&gt;</th><th scope=col>&lt;int&gt;</th><th scope=col>&lt;dbl&gt;</th></tr>
+</thead>
+<tbody>
+	<tr><td>abro os emails marketing que recebo das lojas que gosto                  </td><td> 39</td><td> 7.34</td></tr>
+	<tr><td>estou sempre visitando o site das lojas que gosto                        </td><td>141</td><td>26.55</td></tr>
+	<tr><td>não sigo as lojas que gosto  mas acompanho o seu perfil nas redes sociais</td><td> 32</td><td> 6.03</td></tr>
+	<tr><td>sempre entro em contato com o vendedor da loja pelo WhatsApp             </td><td> 35</td><td> 6.59</td></tr>
+	<tr><td>sigo as lojas que gosto nas redes sociais                                </td><td>161</td><td>30.32</td></tr>
+	<tr><td>tenho o aplicativo das lojas que gosto                                   </td><td> 43</td><td> 8.10</td></tr>
+	<tr><td>vejo propaganda nas redes sociais                                        </td><td> 80</td><td>15.07</td></tr>
+</tbody>
+</table>
+
+
 
 
 ![png](output_26_1.png)
@@ -587,27 +701,540 @@ ggplot(duda, aes(x = papel_internet, fill = papel_internet)) +
 
 
 ```R
-#faz_compra_online
-
-
-
-duda$faz_compra_online <- fct_rev(reorder(duda$faz_compra_online, duda$faz_compra_online,FUN=length))
-
-ggplot(duda, aes(x = faz_compra_online, fill = faz_compra_online)) + 
-    geom_histogram(stat = 'count', position = 'identity') +
-    ylab('Quantidade') + 
-    xlab('') +
-    labs(fill = '') +
-    ggtitle('Você costuma fazer compras online??') +
-    theme(axis.text.x = element_blank())
+plot_duda('meio_preferido', reorder = T, title = 'Qual o seu meio preferido para fazer compras?', width = 9)
 ```
 
-    Warning message:
-    “Ignoring unknown parameters: binwidth, bins, pad”
+
+<table>
+<caption>A data.frame: 7 × 3</caption>
+<thead>
+	<tr><th scope=col>Var1</th><th scope=col>Freq</th><th scope=col>pct</th></tr>
+	<tr><th scope=col>&lt;fct&gt;</th><th scope=col>&lt;int&gt;</th><th scope=col>&lt;dbl&gt;</th></tr>
+</thead>
+<tbody>
+	<tr><td>loja física                                  </td><td>181</td><td>68.56</td></tr>
+	<tr><td>site da loja                                 </td><td> 51</td><td>19.32</td></tr>
+	<tr><td>redes sociais (Instagram, facebook, WhatsApp)</td><td> 17</td><td> 6.44</td></tr>
+	<tr><td>por aplicativo                               </td><td>  9</td><td> 3.41</td></tr>
+	<tr><td>outro                                        </td><td>  3</td><td> 1.14</td></tr>
+	<tr><td>por catálogo                                 </td><td>  2</td><td> 0.76</td></tr>
+	<tr><td>por telefone                                 </td><td>  1</td><td> 0.38</td></tr>
+</tbody>
+</table>
+
+
 
 
 ![png](output_27_1.png)
 
+
+
+```R
+plot_duda('papel_internet', reorder = T, title = 'Qual o papel da internet na hora de fazer compras?', width = 10)
+```
+
+
+<table>
+<caption>A data.frame: 8 × 3</caption>
+<thead>
+	<tr><th scope=col>Var1</th><th scope=col>Freq</th><th scope=col>pct</th></tr>
+	<tr><th scope=col>&lt;fct&gt;</th><th scope=col>&lt;int&gt;</th><th scope=col>&lt;dbl&gt;</th></tr>
+</thead>
+<tbody>
+	<tr><td>saber as novidades das lojas                                        </td><td>85</td><td>32.20</td></tr>
+	<tr><td>faço pesquisa de preço  na internet                                 </td><td>51</td><td>19.32</td></tr>
+	<tr><td>é na internet que vejo propagandas e promoções que me levam a compra</td><td>41</td><td>15.53</td></tr>
+	<tr><td>pesquiso informações sobre produtos na internet                     </td><td>39</td><td>14.77</td></tr>
+	<tr><td>utilizo a internet em todo meu processo de compra                   </td><td>32</td><td>12.12</td></tr>
+	<tr><td>não uso a internet antes de fazer uma compra                        </td><td> 8</td><td> 3.03</td></tr>
+	<tr><td>vejo avaliações de lojas na internet                                </td><td> 5</td><td> 1.89</td></tr>
+	<tr><td>uso a internet somente para realizar a compra                       </td><td> 3</td><td> 1.14</td></tr>
+</tbody>
+</table>
+
+
+
+
+![png](output_28_1.png)
+
+
+
+```R
+plot_duda('faz_compra_online', reorder = T, title = 'Você costuma fazer compras online?', width = 9)
+```
+
+
+<table>
+<caption>A data.frame: 3 × 3</caption>
+<thead>
+	<tr><th scope=col>Var1</th><th scope=col>Freq</th><th scope=col>pct</th></tr>
+	<tr><th scope=col>&lt;fct&gt;</th><th scope=col>&lt;int&gt;</th><th scope=col>&lt;dbl&gt;</th></tr>
+</thead>
+<tbody>
+	<tr><td>sim, faço algumas compras online             </td><td>180</td><td>68.18</td></tr>
+	<tr><td>sim, faço a maioria das minhas compras online</td><td> 46</td><td>17.42</td></tr>
+	<tr><td>não, não gosto de comprar online             </td><td> 38</td><td>14.39</td></tr>
+</tbody>
+</table>
+
+
+
+
+![png](output_29_1.png)
+
+
+
+```R
+plot_multi('tipos_prod', reorder = T, width = 10, title = 'Que tipo de produtos você costuma comprar online?')
+```
+
+
+<table>
+<caption>A data.frame: 15 × 3</caption>
+<thead>
+	<tr><th scope=col>value</th><th scope=col>Freq</th><th scope=col>pct</th></tr>
+	<tr><th scope=col>&lt;fct&gt;</th><th scope=col>&lt;int&gt;</th><th scope=col>&lt;dbl&gt;</th></tr>
+</thead>
+<tbody>
+	<tr><td>acessórios                        </td><td> 94</td><td> 8.42</td></tr>
+	<tr><td>eletrodomêsticos                  </td><td> 58</td><td> 5.20</td></tr>
+	<tr><td>eletrónicos                       </td><td> 98</td><td> 8.78</td></tr>
+	<tr><td>fármacia                          </td><td> 32</td><td> 2.87</td></tr>
+	<tr><td>filmes                            </td><td> 21</td><td> 1.88</td></tr>
+	<tr><td>ingressos de cinema/ shows/ teatro</td><td>148</td><td>13.26</td></tr>
+	<tr><td>livros                            </td><td> 74</td><td> 6.63</td></tr>
+	<tr><td>não compro online                 </td><td> 18</td><td> 1.61</td></tr>
+	<tr><td>outros                            </td><td>  8</td><td> 0.72</td></tr>
+	<tr><td>passagem aérea                    </td><td>171</td><td>15.32</td></tr>
+	<tr><td>produtos de beleza                </td><td> 79</td><td> 7.08</td></tr>
+	<tr><td>produtos esportivos               </td><td> 44</td><td> 3.94</td></tr>
+	<tr><td>roupas                            </td><td>151</td><td>13.53</td></tr>
+	<tr><td>sapato                            </td><td>102</td><td> 9.14</td></tr>
+	<tr><td>supermercado                      </td><td> 18</td><td> 1.61</td></tr>
+</tbody>
+</table>
+
+
+
+
+![png](output_30_1.png)
+
+
+
+```R
+plot_duda('mesma_loja_diferente_maneira', reorder = T, width = 9, title = 'Você costuma comprar da mesma loja de diferentes maneiras?')
+```
+
+
+<table>
+<caption>A data.frame: 4 × 3</caption>
+<thead>
+	<tr><th scope=col>Var1</th><th scope=col>Freq</th><th scope=col>pct</th></tr>
+	<tr><th scope=col>&lt;fct&gt;</th><th scope=col>&lt;int&gt;</th><th scope=col>&lt;dbl&gt;</th></tr>
+</thead>
+<tbody>
+	<tr><td>sim, vario dependendo da minha rotina                  </td><td>108</td><td>40.91</td></tr>
+	<tr><td>sim, vario dependendo da disponibilidade do produto    </td><td> 83</td><td>31.44</td></tr>
+	<tr><td>não, costumo fazer minhas compras sempre em loja física</td><td> 63</td><td>23.86</td></tr>
+	<tr><td>não, costuma fazer minhas compras sempre online        </td><td> 10</td><td> 3.79</td></tr>
+</tbody>
+</table>
+
+
+
+
+![png](output_31_1.png)
+
+
+
+```R
+plot_duda('gosta_mais_meio_compra', reorder = T, width = 12, title = 'Você prefere que as lojas tenham mais de uma forma de compra?')
+```
+
+
+<table>
+<caption>A data.frame: 5 × 3</caption>
+<thead>
+	<tr><th scope=col>Var1</th><th scope=col>Freq</th><th scope=col>pct</th></tr>
+	<tr><th scope=col>&lt;fct&gt;</th><th scope=col>&lt;int&gt;</th><th scope=col>&lt;dbl&gt;</th></tr>
+</thead>
+<tbody>
+	<tr><td>com certeza não                                                                     </td><td>  2</td><td> 0.76</td></tr>
+	<tr><td>com certeza sim, seria demais a loja me oferecer diversas opções de compra e entrega</td><td> 97</td><td>36.74</td></tr>
+	<tr><td>indiferente                                                                         </td><td> 61</td><td>23.11</td></tr>
+	<tr><td>não                                                                                 </td><td>  4</td><td> 1.52</td></tr>
+	<tr><td>sim, seria bom ter diferentes opções de compra e entrega                            </td><td>100</td><td>37.88</td></tr>
+</tbody>
+</table>
+
+
+
+
+![png](output_32_1.png)
+
+
+
+```R
+plot_duda('beleza_meio_compra', reorder = T, width = 10, title = 'Meios de Compra (Produtos de Beleza)')
+```
+
+
+<table>
+<caption>A data.frame: 5 × 3</caption>
+<thead>
+	<tr><th scope=col>Var1</th><th scope=col>Freq</th><th scope=col>pct</th></tr>
+	<tr><th scope=col>&lt;fct&gt;</th><th scope=col>&lt;int&gt;</th><th scope=col>&lt;dbl&gt;</th></tr>
+</thead>
+<tbody>
+	<tr><td>na loja física e levar embora na hora da compra</td><td>166</td><td>62.88</td></tr>
+	<tr><td>na loja física e receber na sua casa           </td><td>  2</td><td> 0.76</td></tr>
+	<tr><td>não compro este tipo de produto                </td><td> 19</td><td> 7.20</td></tr>
+	<tr><td>online e ir retirar na loja                    </td><td>  4</td><td> 1.52</td></tr>
+	<tr><td>online e receber em casa                       </td><td> 73</td><td>27.65</td></tr>
+</tbody>
+</table>
+
+
+
+
+![png](output_33_1.png)
+
+
+
+```R
+plot_duda('livro_meio_compra', reorder = T, width = 10, title = 'Meios de Compra (Produtos de Beleza)')
+```
+
+
+<table>
+<caption>A data.frame: 5 × 3</caption>
+<thead>
+	<tr><th scope=col>Var1</th><th scope=col>Freq</th><th scope=col>pct</th></tr>
+	<tr><th scope=col>&lt;fct&gt;</th><th scope=col>&lt;int&gt;</th><th scope=col>&lt;dbl&gt;</th></tr>
+</thead>
+<tbody>
+	<tr><td>na loja física e levar embora na hora da compra</td><td>100</td><td>37.88</td></tr>
+	<tr><td>na loja física e receber na sua casa           </td><td>  2</td><td> 0.76</td></tr>
+	<tr><td>não compro este tipo de produto                </td><td> 22</td><td> 8.33</td></tr>
+	<tr><td>online e ir retirar na loja                    </td><td>  6</td><td> 2.27</td></tr>
+	<tr><td>online e receber em casa                       </td><td>134</td><td>50.76</td></tr>
+</tbody>
+</table>
+
+
+
+
+![png](output_34_1.png)
+
+
+
+```R
+colnames(duda)
+```
+
+
+<ol class=list-inline>
+	<li>'ID'</li>
+	<li>'date'</li>
+	<li>'duration'</li>
+	<li>'faixa_etaria'</li>
+	<li>'genero'</li>
+	<li>'escolaridade'</li>
+	<li>'regiao'</li>
+	<li>'ocupacao'</li>
+	<li>'renda_familiar'</li>
+	<li>'gosta_compras'</li>
+	<li>'dificuldade_compra'</li>
+	<li>'tipo_loja'</li>
+	<li>'fonte_informacao'</li>
+	<li>'consideracao_loja'</li>
+	<li>'relacao_loja_online'</li>
+	<li>'meio_preferido'</li>
+	<li>'papel_internet'</li>
+	<li>'faz_compra_online'</li>
+	<li>'tipos_prod_online'</li>
+	<li>'mesma_loja_diferente_maneira'</li>
+	<li>'gosta_mais_meio_compra'</li>
+	<li>'beleza_meio_compra'</li>
+	<li>'livro_meio_compra'</li>
+	<li>'alimento_meio_compra'</li>
+	<li>'vestuario_meio_compra'</li>
+	<li>'eletrodomestico_meio_compra'</li>
+	<li>'produto_nao_disp_acao'</li>
+	<li>'pq_compra_online_retira_fisico'</li>
+	<li>'pq_compra_fisica'</li>
+	<li>'pq_compra_online_recebe_casa'</li>
+	<li>'pq_compra_fisica_recebe_casa'</li>
+	<li>'impedimento_compra_online'</li>
+</ol>
+
+
+
+
+```R
+plot_duda('alimento_meio_compra', reorder = T, width = 9, title = 'Meios de Compra (Alimentação)')
+```
+
+
+<table>
+<caption>A data.frame: 4 × 3</caption>
+<thead>
+	<tr><th scope=col>Var1</th><th scope=col>Freq</th><th scope=col>pct</th></tr>
+	<tr><th scope=col>&lt;fct&gt;</th><th scope=col>&lt;int&gt;</th><th scope=col>&lt;dbl&gt;</th></tr>
+</thead>
+<tbody>
+	<tr><td>na loja física e levar embora na hora da compra</td><td>206</td><td>78.03</td></tr>
+	<tr><td>na loja física e receber na sua casa           </td><td> 13</td><td> 4.92</td></tr>
+	<tr><td>não compro este tipo de produto                </td><td> 16</td><td> 6.06</td></tr>
+	<tr><td>online e receber em casa                       </td><td> 29</td><td>10.98</td></tr>
+</tbody>
+</table>
+
+
+
+
+![png](output_36_1.png)
+
+
+
+```R
+plot_duda('vestuario_meio_compra', reorder = T, width = 10, title = 'Meios de Compra (Vestuário)')
+```
+
+
+<table>
+<caption>A data.frame: 5 × 3</caption>
+<thead>
+	<tr><th></th><th scope=col>Var1</th><th scope=col>Freq</th><th scope=col>pct</th></tr>
+	<tr><th></th><th scope=col>&lt;fct&gt;</th><th scope=col>&lt;int&gt;</th><th scope=col>&lt;dbl&gt;</th></tr>
+</thead>
+<tbody>
+	<tr><th scope=row>2</th><td>na loja física e levar embora na hora da compra</td><td>191</td><td>72.35</td></tr>
+	<tr><th scope=row>3</th><td>na loja física e receber na sua casa           </td><td>  5</td><td> 1.89</td></tr>
+	<tr><th scope=row>4</th><td>não compro este tipo de produto                </td><td>  1</td><td> 0.38</td></tr>
+	<tr><th scope=row>5</th><td>online e ir retirar na loja                    </td><td>  5</td><td> 1.89</td></tr>
+	<tr><th scope=row>6</th><td>online e receber em casa                       </td><td> 61</td><td>23.11</td></tr>
+</tbody>
+</table>
+
+
+
+
+![png](output_37_1.png)
+
+
+
+```R
+plot_duda('eletrodomestico_meio_compra', reorder = T, width = 10, title = 'Meios de Compra (Eletrodomésticos)')
+```
+
+
+<table>
+<caption>A data.frame: 5 × 3</caption>
+<thead>
+	<tr><th scope=col>Var1</th><th scope=col>Freq</th><th scope=col>pct</th></tr>
+	<tr><th scope=col>&lt;fct&gt;</th><th scope=col>&lt;int&gt;</th><th scope=col>&lt;dbl&gt;</th></tr>
+</thead>
+<tbody>
+	<tr><td>na loja física e levar embora na hora da compra</td><td> 72</td><td>27.27</td></tr>
+	<tr><td>na loja física e receber na sua casa           </td><td> 30</td><td>11.36</td></tr>
+	<tr><td>não compro este tipo de produto                </td><td>  7</td><td> 2.65</td></tr>
+	<tr><td>online e ir retirar na loja                    </td><td>  4</td><td> 1.52</td></tr>
+	<tr><td>online e receber em casa                       </td><td>151</td><td>57.20</td></tr>
+</tbody>
+</table>
+
+
+
+
+![png](output_38_1.png)
+
+
+
+```R
+plot_duda('produto_nao_disp_acao', reorder = T, width = 10, title = 'Ação ao encontrar produto não disponível')
+```
+
+
+<table>
+<caption>A data.frame: 5 × 3</caption>
+<thead>
+	<tr><th></th><th scope=col>Var1</th><th scope=col>Freq</th><th scope=col>pct</th></tr>
+	<tr><th></th><th scope=col>&lt;fct&gt;</th><th scope=col>&lt;int&gt;</th><th scope=col>&lt;dbl&gt;</th></tr>
+</thead>
+<tbody>
+	<tr><th scope=row>2</th><td>comprar em outra loja                             </td><td> 88</td><td>33.33</td></tr>
+	<tr><th scope=row>3</th><td>desistir de comprar                               </td><td> 14</td><td> 5.30</td></tr>
+	<tr><th scope=row>4</th><td>outro                                             </td><td>  8</td><td> 3.03</td></tr>
+	<tr><th scope=row>5</th><td>realizar a compra na loja e receber na sua casa   </td><td>114</td><td>43.18</td></tr>
+	<tr><th scope=row>6</th><td>voltar na loja quando o produto estiver disponível</td><td> 39</td><td>14.77</td></tr>
+</tbody>
+</table>
+
+
+
+
+![png](output_39_1.png)
+
+
+
+```R
+plot_duda('pq_compra_fisica', reorder = T, width = 10, title = 'Por que compraria em loja física?')
+```
+
+
+<table>
+<caption>A data.frame: 7 × 3</caption>
+<thead>
+	<tr><th scope=col>Var1</th><th scope=col>Freq</th><th scope=col>pct</th></tr>
+	<tr><th scope=col>&lt;fct&gt;</th><th scope=col>&lt;int&gt;</th><th scope=col>&lt;dbl&gt;</th></tr>
+</thead>
+<tbody>
+	<tr><td>gosto da experiencia de ir até a loja       </td><td>  3</td><td> 1.14</td></tr>
+	<tr><td>gosto de ver e sentir o produto             </td><td> 26</td><td> 9.85</td></tr>
+	<tr><td>não escolheria esta opção                   </td><td>  9</td><td> 3.41</td></tr>
+	<tr><td>pela segurança                              </td><td> 16</td><td> 6.06</td></tr>
+	<tr><td>por poder experimentar o produto            </td><td>173</td><td>65.53</td></tr>
+	<tr><td>por poder sair com o produto na hora        </td><td> 31</td><td>11.74</td></tr>
+	<tr><td>por ter um vendedor experiente te orientando</td><td>  6</td><td> 2.27</td></tr>
+</tbody>
+</table>
+
+
+
+
+![png](output_40_1.png)
+
+
+
+```R
+plot_duda('pq_compra_online_retira_fisico', reorder = T, width = 10, title = 'Por que compraria online e retiraria na loja física?')
+```
+
+
+<table>
+<caption>A data.frame: 7 × 3</caption>
+<thead>
+	<tr><th scope=col>Var1</th><th scope=col>Freq</th><th scope=col>pct</th></tr>
+	<tr><th scope=col>&lt;fct&gt;</th><th scope=col>&lt;int&gt;</th><th scope=col>&lt;dbl&gt;</th></tr>
+</thead>
+<tbody>
+	<tr><td>gosto de ir até a loja                                       </td><td>  6</td><td> 2.27</td></tr>
+	<tr><td>não escolheria esta opção                                    </td><td>102</td><td>38.64</td></tr>
+	<tr><td>não tem custo adicional de frete                             </td><td> 44</td><td>16.67</td></tr>
+	<tr><td>o produto chega mais rápido                                  </td><td> 25</td><td> 9.47</td></tr>
+	<tr><td>posso trocar na mesma hora se não gostar                     </td><td> 22</td><td> 8.33</td></tr>
+	<tr><td>posso ver e provar                                           </td><td> 47</td><td>17.80</td></tr>
+	<tr><td>tenho certeza de que o produto que eu quero vai estar na loja</td><td> 18</td><td> 6.82</td></tr>
+</tbody>
+</table>
+
+
+
+
+![png](output_41_1.png)
+
+
+
+```R
+plot_duda('pq_compra_online_recebe_casa', reorder = T, width = 10, title = 'Por que compraria online para receber em casa?')
+```
+
+
+<table>
+<caption>A data.frame: 7 × 3</caption>
+<thead>
+	<tr><th scope=col>Var1</th><th scope=col>Freq</th><th scope=col>pct</th></tr>
+	<tr><th scope=col>&lt;fct&gt;</th><th scope=col>&lt;int&gt;</th><th scope=col>&lt;dbl&gt;</th></tr>
+</thead>
+<tbody>
+	<tr><td>não escolheria esta opção        </td><td> 23</td><td> 8.71</td></tr>
+	<tr><td>não tenho tempo de ir até a loja </td><td>  4</td><td> 1.52</td></tr>
+	<tr><td>pela comodidade                  </td><td>162</td><td>61.36</td></tr>
+	<tr><td>pela rapidez                     </td><td>  6</td><td> 2.27</td></tr>
+	<tr><td>por só ter certos produtos online</td><td> 13</td><td> 4.92</td></tr>
+	<tr><td>por ter preço mais baixo         </td><td> 41</td><td>15.53</td></tr>
+	<tr><td>por ter promoção                 </td><td> 15</td><td> 5.68</td></tr>
+</tbody>
+</table>
+
+
+
+
+![png](output_42_1.png)
+
+
+
+```R
+plot_duda('pq_compra_fisica_recebe_casa', reorder = T, width = 10, title = 'Por que compraria online para receber em casa?')
+```
+
+
+<table>
+<caption>A data.frame: 7 × 3</caption>
+<thead>
+	<tr><th scope=col>Var1</th><th scope=col>Freq</th><th scope=col>pct</th></tr>
+	<tr><th scope=col>&lt;fct&gt;</th><th scope=col>&lt;int&gt;</th><th scope=col>&lt;dbl&gt;</th></tr>
+</thead>
+<tbody>
+	<tr><td>não escolheria esta opção                           </td><td>117</td><td>44.32</td></tr>
+	<tr><td>pela facilidade de achar o produto                  </td><td> 13</td><td> 4.92</td></tr>
+	<tr><td>pela praticidade                                    </td><td> 47</td><td>17.80</td></tr>
+	<tr><td>por não precisa voltar na loja para buscar o produto</td><td> 28</td><td>10.61</td></tr>
+	<tr><td>por nao precisar carregar os produtos               </td><td> 44</td><td>16.67</td></tr>
+	<tr><td>por poder personalizar meu produto                  </td><td>  6</td><td> 2.27</td></tr>
+	<tr><td>por receber orientacao do vendedor                  </td><td>  9</td><td> 3.41</td></tr>
+</tbody>
+</table>
+
+
+
+
+![png](output_43_1.png)
+
+
+
+```R
+plot_multi('impedimento_compra_online', reorder = T, width = 10, title = 'O que te impede de fazer compras online?')
+```
+
+
+<table>
+<caption>A data.frame: 11 × 3</caption>
+<thead>
+	<tr><th scope=col>value</th><th scope=col>Freq</th><th scope=col>pct</th></tr>
+	<tr><th scope=col>&lt;fct&gt;</th><th scope=col>&lt;int&gt;</th><th scope=col>&lt;dbl&gt;</th></tr>
+</thead>
+<tbody>
+	<tr><td>a demora para receber o produto                          </td><td> 36</td><td> 6.47</td></tr>
+	<tr><td>a falta de informações sobre o produto                   </td><td> 25</td><td> 4.50</td></tr>
+	<tr><td>a falta de padronização dos tamanhos                     </td><td> 36</td><td> 6.47</td></tr>
+	<tr><td>a incerteza se o produto ira servir                      </td><td>113</td><td>20.32</td></tr>
+	<tr><td>a insegurança em relacao ao pagamento                    </td><td> 28</td><td> 5.04</td></tr>
+	<tr><td>a inseguranca se o poduto realmente chegara              </td><td> 41</td><td> 7.37</td></tr>
+	<tr><td>gostar da experiencia que tenho quando vou na loja física</td><td> 42</td><td> 7.55</td></tr>
+	<tr><td>nada me impede de comprar online                         </td><td> 54</td><td> 9.71</td></tr>
+	<tr><td>não poder experimentar o produto                         </td><td>110</td><td>19.78</td></tr>
+	<tr><td>não poder ver e tocar o produto                          </td><td> 62</td><td>11.15</td></tr>
+	<tr><td>outros                                                   </td><td>  9</td><td> 1.62</td></tr>
+</tbody>
+</table>
+
+
+
+
+![png](output_44_1.png)
+
+
+
+```R
+
+```
+
+
+```R
+
+```
 
 
 ```R
@@ -653,7 +1280,7 @@ ggplot(duda, aes(x = factor(gosta_compras), fill = factor(faixa_etaria))) +
     “Ignoring unknown parameters: binwidth, bins, pad”
 
 
-![png](output_34_1.png)
+![png](output_53_1.png)
 
 
 
@@ -679,2119 +1306,2119 @@ for (col1 in plot_cols){
 ```
 
 
-![png](output_36_0.png)
+![png](output_55_0.png)
 
 
 
-![png](output_36_1.png)
+![png](output_55_1.png)
 
 
 
-![png](output_36_2.png)
+![png](output_55_2.png)
 
 
 
-![png](output_36_3.png)
+![png](output_55_3.png)
 
 
 
-![png](output_36_4.png)
+![png](output_55_4.png)
 
 
 
-![png](output_36_5.png)
+![png](output_55_5.png)
 
 
 
-![png](output_36_6.png)
+![png](output_55_6.png)
 
 
 
-![png](output_36_7.png)
+![png](output_55_7.png)
 
 
 
-![png](output_36_8.png)
+![png](output_55_8.png)
 
 
 
-![png](output_36_9.png)
+![png](output_55_9.png)
 
 
 
-![png](output_36_10.png)
+![png](output_55_10.png)
 
 
 
-![png](output_36_11.png)
+![png](output_55_11.png)
 
 
 
-![png](output_36_12.png)
+![png](output_55_12.png)
 
 
 
-![png](output_36_13.png)
+![png](output_55_13.png)
 
 
 
-![png](output_36_14.png)
+![png](output_55_14.png)
 
 
 
-![png](output_36_15.png)
+![png](output_55_15.png)
 
 
 
-![png](output_36_16.png)
+![png](output_55_16.png)
 
 
 
-![png](output_36_17.png)
+![png](output_55_17.png)
 
 
 
-![png](output_36_18.png)
+![png](output_55_18.png)
 
 
 
-![png](output_36_19.png)
+![png](output_55_19.png)
 
 
 
-![png](output_36_20.png)
+![png](output_55_20.png)
 
 
 
-![png](output_36_21.png)
+![png](output_55_21.png)
 
 
 
-![png](output_36_22.png)
+![png](output_55_22.png)
 
 
 
-![png](output_36_23.png)
+![png](output_55_23.png)
 
 
 
-![png](output_36_24.png)
+![png](output_55_24.png)
 
 
 
-![png](output_36_25.png)
+![png](output_55_25.png)
 
 
 
-![png](output_36_26.png)
+![png](output_55_26.png)
 
 
 
-![png](output_36_27.png)
+![png](output_55_27.png)
 
 
 
-![png](output_36_28.png)
+![png](output_55_28.png)
 
 
 
-![png](output_36_29.png)
+![png](output_55_29.png)
 
 
 
-![png](output_36_30.png)
+![png](output_55_30.png)
 
 
 
-![png](output_36_31.png)
+![png](output_55_31.png)
 
 
 
-![png](output_36_32.png)
+![png](output_55_32.png)
 
 
 
-![png](output_36_33.png)
+![png](output_55_33.png)
 
 
 
-![png](output_36_34.png)
+![png](output_55_34.png)
 
 
 
-![png](output_36_35.png)
+![png](output_55_35.png)
 
 
 
-![png](output_36_36.png)
+![png](output_55_36.png)
 
 
 
-![png](output_36_37.png)
+![png](output_55_37.png)
 
 
 
-![png](output_36_38.png)
+![png](output_55_38.png)
 
 
 
-![png](output_36_39.png)
+![png](output_55_39.png)
 
 
 
-![png](output_36_40.png)
+![png](output_55_40.png)
 
 
 
-![png](output_36_41.png)
+![png](output_55_41.png)
 
 
 
-![png](output_36_42.png)
+![png](output_55_42.png)
 
 
 
-![png](output_36_43.png)
+![png](output_55_43.png)
 
 
 
-![png](output_36_44.png)
+![png](output_55_44.png)
 
 
 
-![png](output_36_45.png)
+![png](output_55_45.png)
 
 
 
-![png](output_36_46.png)
+![png](output_55_46.png)
 
 
 
-![png](output_36_47.png)
+![png](output_55_47.png)
 
 
 
-![png](output_36_48.png)
+![png](output_55_48.png)
 
 
 
-![png](output_36_49.png)
+![png](output_55_49.png)
 
 
 
-![png](output_36_50.png)
+![png](output_55_50.png)
 
 
 
-![png](output_36_51.png)
+![png](output_55_51.png)
 
 
 
-![png](output_36_52.png)
+![png](output_55_52.png)
 
 
 
-![png](output_36_53.png)
+![png](output_55_53.png)
 
 
 
-![png](output_36_54.png)
+![png](output_55_54.png)
 
 
 
-![png](output_36_55.png)
+![png](output_55_55.png)
 
 
 
-![png](output_36_56.png)
+![png](output_55_56.png)
 
 
 
-![png](output_36_57.png)
+![png](output_55_57.png)
 
 
 
-![png](output_36_58.png)
+![png](output_55_58.png)
 
 
 
-![png](output_36_59.png)
+![png](output_55_59.png)
 
 
 
-![png](output_36_60.png)
+![png](output_55_60.png)
 
 
 
-![png](output_36_61.png)
+![png](output_55_61.png)
 
 
 
-![png](output_36_62.png)
+![png](output_55_62.png)
 
 
 
-![png](output_36_63.png)
+![png](output_55_63.png)
 
 
 
-![png](output_36_64.png)
+![png](output_55_64.png)
 
 
 
-![png](output_36_65.png)
+![png](output_55_65.png)
 
 
 
-![png](output_36_66.png)
+![png](output_55_66.png)
 
 
 
-![png](output_36_67.png)
+![png](output_55_67.png)
 
 
 
-![png](output_36_68.png)
+![png](output_55_68.png)
 
 
 
-![png](output_36_69.png)
+![png](output_55_69.png)
 
 
 
-![png](output_36_70.png)
+![png](output_55_70.png)
 
 
 
-![png](output_36_71.png)
+![png](output_55_71.png)
 
 
 
-![png](output_36_72.png)
+![png](output_55_72.png)
 
 
 
-![png](output_36_73.png)
+![png](output_55_73.png)
 
 
 
-![png](output_36_74.png)
+![png](output_55_74.png)
 
 
 
-![png](output_36_75.png)
+![png](output_55_75.png)
 
 
 
-![png](output_36_76.png)
+![png](output_55_76.png)
 
 
 
-![png](output_36_77.png)
+![png](output_55_77.png)
 
 
 
-![png](output_36_78.png)
+![png](output_55_78.png)
 
 
 
-![png](output_36_79.png)
+![png](output_55_79.png)
 
 
 
-![png](output_36_80.png)
+![png](output_55_80.png)
 
 
 
-![png](output_36_81.png)
+![png](output_55_81.png)
 
 
 
-![png](output_36_82.png)
+![png](output_55_82.png)
 
 
 
-![png](output_36_83.png)
+![png](output_55_83.png)
 
 
 
-![png](output_36_84.png)
+![png](output_55_84.png)
 
 
 
-![png](output_36_85.png)
+![png](output_55_85.png)
 
 
 
-![png](output_36_86.png)
+![png](output_55_86.png)
 
 
 
-![png](output_36_87.png)
+![png](output_55_87.png)
 
 
 
-![png](output_36_88.png)
+![png](output_55_88.png)
 
 
 
-![png](output_36_89.png)
+![png](output_55_89.png)
 
 
 
-![png](output_36_90.png)
+![png](output_55_90.png)
 
 
 
-![png](output_36_91.png)
+![png](output_55_91.png)
 
 
 
-![png](output_36_92.png)
+![png](output_55_92.png)
 
 
 
-![png](output_36_93.png)
+![png](output_55_93.png)
 
 
 
-![png](output_36_94.png)
+![png](output_55_94.png)
 
 
 
-![png](output_36_95.png)
+![png](output_55_95.png)
 
 
 
-![png](output_36_96.png)
+![png](output_55_96.png)
 
 
 
-![png](output_36_97.png)
+![png](output_55_97.png)
 
 
 
-![png](output_36_98.png)
+![png](output_55_98.png)
 
 
 
-![png](output_36_99.png)
+![png](output_55_99.png)
 
 
 
-![png](output_36_100.png)
+![png](output_55_100.png)
 
 
 
-![png](output_36_101.png)
+![png](output_55_101.png)
 
 
 
-![png](output_36_102.png)
+![png](output_55_102.png)
 
 
 
-![png](output_36_103.png)
+![png](output_55_103.png)
 
 
 
-![png](output_36_104.png)
+![png](output_55_104.png)
 
 
 
-![png](output_36_105.png)
+![png](output_55_105.png)
 
 
 
-![png](output_36_106.png)
+![png](output_55_106.png)
 
 
 
-![png](output_36_107.png)
+![png](output_55_107.png)
 
 
 
-![png](output_36_108.png)
+![png](output_55_108.png)
 
 
 
-![png](output_36_109.png)
+![png](output_55_109.png)
 
 
 
-![png](output_36_110.png)
+![png](output_55_110.png)
 
 
 
-![png](output_36_111.png)
+![png](output_55_111.png)
 
 
 
-![png](output_36_112.png)
+![png](output_55_112.png)
 
 
 
-![png](output_36_113.png)
+![png](output_55_113.png)
 
 
 
-![png](output_36_114.png)
+![png](output_55_114.png)
 
 
 
-![png](output_36_115.png)
+![png](output_55_115.png)
 
 
 
-![png](output_36_116.png)
+![png](output_55_116.png)
 
 
 
-![png](output_36_117.png)
+![png](output_55_117.png)
 
 
 
-![png](output_36_118.png)
+![png](output_55_118.png)
 
 
 
-![png](output_36_119.png)
+![png](output_55_119.png)
 
 
 
-![png](output_36_120.png)
+![png](output_55_120.png)
 
 
 
-![png](output_36_121.png)
+![png](output_55_121.png)
 
 
 
-![png](output_36_122.png)
+![png](output_55_122.png)
 
 
 
-![png](output_36_123.png)
+![png](output_55_123.png)
 
 
 
-![png](output_36_124.png)
+![png](output_55_124.png)
 
 
 
-![png](output_36_125.png)
+![png](output_55_125.png)
 
 
 
-![png](output_36_126.png)
+![png](output_55_126.png)
 
 
 
-![png](output_36_127.png)
+![png](output_55_127.png)
 
 
 
-![png](output_36_128.png)
+![png](output_55_128.png)
 
 
 
-![png](output_36_129.png)
+![png](output_55_129.png)
 
 
 
-![png](output_36_130.png)
+![png](output_55_130.png)
 
 
 
-![png](output_36_131.png)
+![png](output_55_131.png)
 
 
 
-![png](output_36_132.png)
+![png](output_55_132.png)
 
 
 
-![png](output_36_133.png)
+![png](output_55_133.png)
 
 
 
-![png](output_36_134.png)
+![png](output_55_134.png)
 
 
 
-![png](output_36_135.png)
+![png](output_55_135.png)
 
 
 
-![png](output_36_136.png)
+![png](output_55_136.png)
 
 
 
-![png](output_36_137.png)
+![png](output_55_137.png)
 
 
 
-![png](output_36_138.png)
+![png](output_55_138.png)
 
 
 
-![png](output_36_139.png)
+![png](output_55_139.png)
 
 
 
-![png](output_36_140.png)
+![png](output_55_140.png)
 
 
 
-![png](output_36_141.png)
+![png](output_55_141.png)
 
 
 
-![png](output_36_142.png)
+![png](output_55_142.png)
 
 
 
-![png](output_36_143.png)
+![png](output_55_143.png)
 
 
 
-![png](output_36_144.png)
+![png](output_55_144.png)
 
 
 
-![png](output_36_145.png)
+![png](output_55_145.png)
 
 
 
-![png](output_36_146.png)
+![png](output_55_146.png)
 
 
 
-![png](output_36_147.png)
+![png](output_55_147.png)
 
 
 
-![png](output_36_148.png)
+![png](output_55_148.png)
 
 
 
-![png](output_36_149.png)
+![png](output_55_149.png)
 
 
 
-![png](output_36_150.png)
+![png](output_55_150.png)
 
 
 
-![png](output_36_151.png)
+![png](output_55_151.png)
 
 
 
-![png](output_36_152.png)
+![png](output_55_152.png)
 
 
 
-![png](output_36_153.png)
+![png](output_55_153.png)
 
 
 
-![png](output_36_154.png)
+![png](output_55_154.png)
 
 
 
-![png](output_36_155.png)
+![png](output_55_155.png)
 
 
 
-![png](output_36_156.png)
+![png](output_55_156.png)
 
 
 
-![png](output_36_157.png)
+![png](output_55_157.png)
 
 
 
-![png](output_36_158.png)
+![png](output_55_158.png)
 
 
 
-![png](output_36_159.png)
+![png](output_55_159.png)
 
 
 
-![png](output_36_160.png)
+![png](output_55_160.png)
 
 
 
-![png](output_36_161.png)
+![png](output_55_161.png)
 
 
 
-![png](output_36_162.png)
+![png](output_55_162.png)
 
 
 
-![png](output_36_163.png)
+![png](output_55_163.png)
 
 
 
-![png](output_36_164.png)
+![png](output_55_164.png)
 
 
 
-![png](output_36_165.png)
+![png](output_55_165.png)
 
 
 
-![png](output_36_166.png)
+![png](output_55_166.png)
 
 
 
-![png](output_36_167.png)
+![png](output_55_167.png)
 
 
 
-![png](output_36_168.png)
+![png](output_55_168.png)
 
 
 
-![png](output_36_169.png)
+![png](output_55_169.png)
 
 
 
-![png](output_36_170.png)
+![png](output_55_170.png)
 
 
 
-![png](output_36_171.png)
+![png](output_55_171.png)
 
 
 
-![png](output_36_172.png)
+![png](output_55_172.png)
 
 
 
-![png](output_36_173.png)
+![png](output_55_173.png)
 
 
 
-![png](output_36_174.png)
+![png](output_55_174.png)
 
 
 
-![png](output_36_175.png)
+![png](output_55_175.png)
 
 
 
-![png](output_36_176.png)
+![png](output_55_176.png)
 
 
 
-![png](output_36_177.png)
+![png](output_55_177.png)
 
 
 
-![png](output_36_178.png)
+![png](output_55_178.png)
 
 
 
-![png](output_36_179.png)
+![png](output_55_179.png)
 
 
 
-![png](output_36_180.png)
+![png](output_55_180.png)
 
 
 
-![png](output_36_181.png)
+![png](output_55_181.png)
 
 
 
-![png](output_36_182.png)
+![png](output_55_182.png)
 
 
 
-![png](output_36_183.png)
+![png](output_55_183.png)
 
 
 
-![png](output_36_184.png)
+![png](output_55_184.png)
 
 
 
-![png](output_36_185.png)
+![png](output_55_185.png)
 
 
 
-![png](output_36_186.png)
+![png](output_55_186.png)
 
 
 
-![png](output_36_187.png)
+![png](output_55_187.png)
 
 
 
-![png](output_36_188.png)
+![png](output_55_188.png)
 
 
 
-![png](output_36_189.png)
+![png](output_55_189.png)
 
 
 
-![png](output_36_190.png)
+![png](output_55_190.png)
 
 
 
-![png](output_36_191.png)
+![png](output_55_191.png)
 
 
 
-![png](output_36_192.png)
+![png](output_55_192.png)
 
 
 
-![png](output_36_193.png)
+![png](output_55_193.png)
 
 
 
-![png](output_36_194.png)
+![png](output_55_194.png)
 
 
 
-![png](output_36_195.png)
+![png](output_55_195.png)
 
 
 
-![png](output_36_196.png)
+![png](output_55_196.png)
 
 
 
-![png](output_36_197.png)
+![png](output_55_197.png)
 
 
 
-![png](output_36_198.png)
+![png](output_55_198.png)
 
 
 
-![png](output_36_199.png)
+![png](output_55_199.png)
 
 
 
-![png](output_36_200.png)
+![png](output_55_200.png)
 
 
 
-![png](output_36_201.png)
+![png](output_55_201.png)
 
 
 
-![png](output_36_202.png)
+![png](output_55_202.png)
 
 
 
-![png](output_36_203.png)
+![png](output_55_203.png)
 
 
 
-![png](output_36_204.png)
+![png](output_55_204.png)
 
 
 
-![png](output_36_205.png)
+![png](output_55_205.png)
 
 
 
-![png](output_36_206.png)
+![png](output_55_206.png)
 
 
 
-![png](output_36_207.png)
+![png](output_55_207.png)
 
 
 
-![png](output_36_208.png)
+![png](output_55_208.png)
 
 
 
-![png](output_36_209.png)
+![png](output_55_209.png)
 
 
 
-![png](output_36_210.png)
+![png](output_55_210.png)
 
 
 
-![png](output_36_211.png)
+![png](output_55_211.png)
 
 
 
-![png](output_36_212.png)
+![png](output_55_212.png)
 
 
 
-![png](output_36_213.png)
+![png](output_55_213.png)
 
 
 
-![png](output_36_214.png)
+![png](output_55_214.png)
 
 
 
-![png](output_36_215.png)
+![png](output_55_215.png)
 
 
 
-![png](output_36_216.png)
+![png](output_55_216.png)
 
 
 
-![png](output_36_217.png)
+![png](output_55_217.png)
 
 
 
-![png](output_36_218.png)
+![png](output_55_218.png)
 
 
 
-![png](output_36_219.png)
+![png](output_55_219.png)
 
 
 
-![png](output_36_220.png)
+![png](output_55_220.png)
 
 
 
-![png](output_36_221.png)
+![png](output_55_221.png)
 
 
 
-![png](output_36_222.png)
+![png](output_55_222.png)
 
 
 
-![png](output_36_223.png)
+![png](output_55_223.png)
 
 
 
-![png](output_36_224.png)
+![png](output_55_224.png)
 
 
 
-![png](output_36_225.png)
+![png](output_55_225.png)
 
 
 
-![png](output_36_226.png)
+![png](output_55_226.png)
 
 
 
-![png](output_36_227.png)
+![png](output_55_227.png)
 
 
 
-![png](output_36_228.png)
+![png](output_55_228.png)
 
 
 
-![png](output_36_229.png)
+![png](output_55_229.png)
 
 
 
-![png](output_36_230.png)
+![png](output_55_230.png)
 
 
 
-![png](output_36_231.png)
+![png](output_55_231.png)
 
 
 
-![png](output_36_232.png)
+![png](output_55_232.png)
 
 
 
-![png](output_36_233.png)
+![png](output_55_233.png)
 
 
 
-![png](output_36_234.png)
+![png](output_55_234.png)
 
 
 
-![png](output_36_235.png)
+![png](output_55_235.png)
 
 
 
-![png](output_36_236.png)
+![png](output_55_236.png)
 
 
 
-![png](output_36_237.png)
+![png](output_55_237.png)
 
 
 
-![png](output_36_238.png)
+![png](output_55_238.png)
 
 
 
-![png](output_36_239.png)
+![png](output_55_239.png)
 
 
 
-![png](output_36_240.png)
+![png](output_55_240.png)
 
 
 
-![png](output_36_241.png)
+![png](output_55_241.png)
 
 
 
-![png](output_36_242.png)
+![png](output_55_242.png)
 
 
 
-![png](output_36_243.png)
+![png](output_55_243.png)
 
 
 
-![png](output_36_244.png)
+![png](output_55_244.png)
 
 
 
-![png](output_36_245.png)
+![png](output_55_245.png)
 
 
 
-![png](output_36_246.png)
+![png](output_55_246.png)
 
 
 
-![png](output_36_247.png)
+![png](output_55_247.png)
 
 
 
-![png](output_36_248.png)
+![png](output_55_248.png)
 
 
 
-![png](output_36_249.png)
+![png](output_55_249.png)
 
 
 
-![png](output_36_250.png)
+![png](output_55_250.png)
 
 
 
-![png](output_36_251.png)
+![png](output_55_251.png)
 
 
 
-![png](output_36_252.png)
+![png](output_55_252.png)
 
 
 
-![png](output_36_253.png)
+![png](output_55_253.png)
 
 
 
-![png](output_36_254.png)
+![png](output_55_254.png)
 
 
 
-![png](output_36_255.png)
+![png](output_55_255.png)
 
 
 
-![png](output_36_256.png)
+![png](output_55_256.png)
 
 
 
-![png](output_36_257.png)
+![png](output_55_257.png)
 
 
 
-![png](output_36_258.png)
+![png](output_55_258.png)
 
 
 
-![png](output_36_259.png)
+![png](output_55_259.png)
 
 
 
-![png](output_36_260.png)
+![png](output_55_260.png)
 
 
 
-![png](output_36_261.png)
+![png](output_55_261.png)
 
 
 
-![png](output_36_262.png)
+![png](output_55_262.png)
 
 
 
-![png](output_36_263.png)
+![png](output_55_263.png)
 
 
 
-![png](output_36_264.png)
+![png](output_55_264.png)
 
 
 
-![png](output_36_265.png)
+![png](output_55_265.png)
 
 
 
-![png](output_36_266.png)
+![png](output_55_266.png)
 
 
 
-![png](output_36_267.png)
+![png](output_55_267.png)
 
 
 
-![png](output_36_268.png)
+![png](output_55_268.png)
 
 
 
-![png](output_36_269.png)
+![png](output_55_269.png)
 
 
 
-![png](output_36_270.png)
+![png](output_55_270.png)
 
 
 
-![png](output_36_271.png)
+![png](output_55_271.png)
 
 
 
-![png](output_36_272.png)
+![png](output_55_272.png)
 
 
 
-![png](output_36_273.png)
+![png](output_55_273.png)
 
 
 
-![png](output_36_274.png)
+![png](output_55_274.png)
 
 
 
-![png](output_36_275.png)
+![png](output_55_275.png)
 
 
 
-![png](output_36_276.png)
+![png](output_55_276.png)
 
 
 
-![png](output_36_277.png)
+![png](output_55_277.png)
 
 
 
-![png](output_36_278.png)
+![png](output_55_278.png)
 
 
 
-![png](output_36_279.png)
+![png](output_55_279.png)
 
 
 
-![png](output_36_280.png)
+![png](output_55_280.png)
 
 
 
-![png](output_36_281.png)
+![png](output_55_281.png)
 
 
 
-![png](output_36_282.png)
+![png](output_55_282.png)
 
 
 
-![png](output_36_283.png)
+![png](output_55_283.png)
 
 
 
-![png](output_36_284.png)
+![png](output_55_284.png)
 
 
 
-![png](output_36_285.png)
+![png](output_55_285.png)
 
 
 
-![png](output_36_286.png)
+![png](output_55_286.png)
 
 
 
-![png](output_36_287.png)
+![png](output_55_287.png)
 
 
 
-![png](output_36_288.png)
+![png](output_55_288.png)
 
 
 
-![png](output_36_289.png)
+![png](output_55_289.png)
 
 
 
-![png](output_36_290.png)
+![png](output_55_290.png)
 
 
 
-![png](output_36_291.png)
+![png](output_55_291.png)
 
 
 
-![png](output_36_292.png)
+![png](output_55_292.png)
 
 
 
-![png](output_36_293.png)
+![png](output_55_293.png)
 
 
 
-![png](output_36_294.png)
+![png](output_55_294.png)
 
 
 
-![png](output_36_295.png)
+![png](output_55_295.png)
 
 
 
-![png](output_36_296.png)
+![png](output_55_296.png)
 
 
 
-![png](output_36_297.png)
+![png](output_55_297.png)
 
 
 
-![png](output_36_298.png)
+![png](output_55_298.png)
 
 
 
-![png](output_36_299.png)
+![png](output_55_299.png)
 
 
 
-![png](output_36_300.png)
+![png](output_55_300.png)
 
 
 
-![png](output_36_301.png)
+![png](output_55_301.png)
 
 
 
-![png](output_36_302.png)
+![png](output_55_302.png)
 
 
 
-![png](output_36_303.png)
+![png](output_55_303.png)
 
 
 
-![png](output_36_304.png)
+![png](output_55_304.png)
 
 
 
-![png](output_36_305.png)
+![png](output_55_305.png)
 
 
 
-![png](output_36_306.png)
+![png](output_55_306.png)
 
 
 
-![png](output_36_307.png)
+![png](output_55_307.png)
 
 
 
-![png](output_36_308.png)
+![png](output_55_308.png)
 
 
 
-![png](output_36_309.png)
+![png](output_55_309.png)
 
 
 
-![png](output_36_310.png)
+![png](output_55_310.png)
 
 
 
-![png](output_36_311.png)
+![png](output_55_311.png)
 
 
 
-![png](output_36_312.png)
+![png](output_55_312.png)
 
 
 
-![png](output_36_313.png)
+![png](output_55_313.png)
 
 
 
-![png](output_36_314.png)
+![png](output_55_314.png)
 
 
 
-![png](output_36_315.png)
+![png](output_55_315.png)
 
 
 
-![png](output_36_316.png)
+![png](output_55_316.png)
 
 
 
-![png](output_36_317.png)
+![png](output_55_317.png)
 
 
 
-![png](output_36_318.png)
+![png](output_55_318.png)
 
 
 
-![png](output_36_319.png)
+![png](output_55_319.png)
 
 
 
-![png](output_36_320.png)
+![png](output_55_320.png)
 
 
 
-![png](output_36_321.png)
+![png](output_55_321.png)
 
 
 
-![png](output_36_322.png)
+![png](output_55_322.png)
 
 
 
-![png](output_36_323.png)
+![png](output_55_323.png)
 
 
 
-![png](output_36_324.png)
+![png](output_55_324.png)
 
 
 
-![png](output_36_325.png)
+![png](output_55_325.png)
 
 
 
-![png](output_36_326.png)
+![png](output_55_326.png)
 
 
 
-![png](output_36_327.png)
+![png](output_55_327.png)
 
 
 
-![png](output_36_328.png)
+![png](output_55_328.png)
 
 
 
-![png](output_36_329.png)
+![png](output_55_329.png)
 
 
 
-![png](output_36_330.png)
+![png](output_55_330.png)
 
 
 
-![png](output_36_331.png)
+![png](output_55_331.png)
 
 
 
-![png](output_36_332.png)
+![png](output_55_332.png)
 
 
 
-![png](output_36_333.png)
+![png](output_55_333.png)
 
 
 
-![png](output_36_334.png)
+![png](output_55_334.png)
 
 
 
-![png](output_36_335.png)
+![png](output_55_335.png)
 
 
 
-![png](output_36_336.png)
+![png](output_55_336.png)
 
 
 
-![png](output_36_337.png)
+![png](output_55_337.png)
 
 
 
-![png](output_36_338.png)
+![png](output_55_338.png)
 
 
 
-![png](output_36_339.png)
+![png](output_55_339.png)
 
 
 
-![png](output_36_340.png)
+![png](output_55_340.png)
 
 
 
-![png](output_36_341.png)
+![png](output_55_341.png)
 
 
 
-![png](output_36_342.png)
+![png](output_55_342.png)
 
 
 
-![png](output_36_343.png)
+![png](output_55_343.png)
 
 
 
-![png](output_36_344.png)
+![png](output_55_344.png)
 
 
 
-![png](output_36_345.png)
+![png](output_55_345.png)
 
 
 
-![png](output_36_346.png)
+![png](output_55_346.png)
 
 
 
-![png](output_36_347.png)
+![png](output_55_347.png)
 
 
 
-![png](output_36_348.png)
+![png](output_55_348.png)
 
 
 
-![png](output_36_349.png)
+![png](output_55_349.png)
 
 
 
-![png](output_36_350.png)
+![png](output_55_350.png)
 
 
 
-![png](output_36_351.png)
+![png](output_55_351.png)
 
 
 
-![png](output_36_352.png)
+![png](output_55_352.png)
 
 
 
-![png](output_36_353.png)
+![png](output_55_353.png)
 
 
 
-![png](output_36_354.png)
+![png](output_55_354.png)
 
 
 
-![png](output_36_355.png)
+![png](output_55_355.png)
 
 
 
-![png](output_36_356.png)
+![png](output_55_356.png)
 
 
 
-![png](output_36_357.png)
+![png](output_55_357.png)
 
 
 
-![png](output_36_358.png)
+![png](output_55_358.png)
 
 
 
-![png](output_36_359.png)
+![png](output_55_359.png)
 
 
 
-![png](output_36_360.png)
+![png](output_55_360.png)
 
 
 
-![png](output_36_361.png)
+![png](output_55_361.png)
 
 
 
-![png](output_36_362.png)
+![png](output_55_362.png)
 
 
 
-![png](output_36_363.png)
+![png](output_55_363.png)
 
 
 
-![png](output_36_364.png)
+![png](output_55_364.png)
 
 
 
-![png](output_36_365.png)
+![png](output_55_365.png)
 
 
 
-![png](output_36_366.png)
+![png](output_55_366.png)
 
 
 
-![png](output_36_367.png)
+![png](output_55_367.png)
 
 
 
-![png](output_36_368.png)
+![png](output_55_368.png)
 
 
 
-![png](output_36_369.png)
+![png](output_55_369.png)
 
 
 
-![png](output_36_370.png)
+![png](output_55_370.png)
 
 
 
-![png](output_36_371.png)
+![png](output_55_371.png)
 
 
 
-![png](output_36_372.png)
+![png](output_55_372.png)
 
 
 
-![png](output_36_373.png)
+![png](output_55_373.png)
 
 
 
-![png](output_36_374.png)
+![png](output_55_374.png)
 
 
 
-![png](output_36_375.png)
+![png](output_55_375.png)
 
 
 
-![png](output_36_376.png)
+![png](output_55_376.png)
 
 
 
-![png](output_36_377.png)
+![png](output_55_377.png)
 
 
 
-![png](output_36_378.png)
+![png](output_55_378.png)
 
 
 
-![png](output_36_379.png)
+![png](output_55_379.png)
 
 
 
-![png](output_36_380.png)
+![png](output_55_380.png)
 
 
 
-![png](output_36_381.png)
+![png](output_55_381.png)
 
 
 
-![png](output_36_382.png)
+![png](output_55_382.png)
 
 
 
-![png](output_36_383.png)
+![png](output_55_383.png)
 
 
 
-![png](output_36_384.png)
+![png](output_55_384.png)
 
 
 
-![png](output_36_385.png)
+![png](output_55_385.png)
 
 
 
-![png](output_36_386.png)
+![png](output_55_386.png)
 
 
 
-![png](output_36_387.png)
+![png](output_55_387.png)
 
 
 
-![png](output_36_388.png)
+![png](output_55_388.png)
 
 
 
-![png](output_36_389.png)
+![png](output_55_389.png)
 
 
 
-![png](output_36_390.png)
+![png](output_55_390.png)
 
 
 
-![png](output_36_391.png)
+![png](output_55_391.png)
 
 
 
-![png](output_36_392.png)
+![png](output_55_392.png)
 
 
 
-![png](output_36_393.png)
+![png](output_55_393.png)
 
 
 
-![png](output_36_394.png)
+![png](output_55_394.png)
 
 
 
-![png](output_36_395.png)
+![png](output_55_395.png)
 
 
 
-![png](output_36_396.png)
+![png](output_55_396.png)
 
 
 
-![png](output_36_397.png)
+![png](output_55_397.png)
 
 
 
-![png](output_36_398.png)
+![png](output_55_398.png)
 
 
 
-![png](output_36_399.png)
+![png](output_55_399.png)
 
 
 
-![png](output_36_400.png)
+![png](output_55_400.png)
 
 
 
-![png](output_36_401.png)
+![png](output_55_401.png)
 
 
 
-![png](output_36_402.png)
+![png](output_55_402.png)
 
 
 
-![png](output_36_403.png)
+![png](output_55_403.png)
 
 
 
-![png](output_36_404.png)
+![png](output_55_404.png)
 
 
 
-![png](output_36_405.png)
+![png](output_55_405.png)
 
 
 
-![png](output_36_406.png)
+![png](output_55_406.png)
 
 
 
-![png](output_36_407.png)
+![png](output_55_407.png)
 
 
 
-![png](output_36_408.png)
+![png](output_55_408.png)
 
 
 
-![png](output_36_409.png)
+![png](output_55_409.png)
 
 
 
-![png](output_36_410.png)
+![png](output_55_410.png)
 
 
 
-![png](output_36_411.png)
+![png](output_55_411.png)
 
 
 
-![png](output_36_412.png)
+![png](output_55_412.png)
 
 
 
-![png](output_36_413.png)
+![png](output_55_413.png)
 
 
 
-![png](output_36_414.png)
+![png](output_55_414.png)
 
 
 
-![png](output_36_415.png)
+![png](output_55_415.png)
 
 
 
-![png](output_36_416.png)
+![png](output_55_416.png)
 
 
 
-![png](output_36_417.png)
+![png](output_55_417.png)
 
 
 
-![png](output_36_418.png)
+![png](output_55_418.png)
 
 
 
-![png](output_36_419.png)
+![png](output_55_419.png)
 
 
 
-![png](output_36_420.png)
+![png](output_55_420.png)
 
 
 
-![png](output_36_421.png)
+![png](output_55_421.png)
 
 
 
-![png](output_36_422.png)
+![png](output_55_422.png)
 
 
 
-![png](output_36_423.png)
+![png](output_55_423.png)
 
 
 
-![png](output_36_424.png)
+![png](output_55_424.png)
 
 
 
-![png](output_36_425.png)
+![png](output_55_425.png)
 
 
 
-![png](output_36_426.png)
+![png](output_55_426.png)
 
 
 
-![png](output_36_427.png)
+![png](output_55_427.png)
 
 
 
-![png](output_36_428.png)
+![png](output_55_428.png)
 
 
 
-![png](output_36_429.png)
+![png](output_55_429.png)
 
 
 
-![png](output_36_430.png)
+![png](output_55_430.png)
 
 
 
-![png](output_36_431.png)
+![png](output_55_431.png)
 
 
 
-![png](output_36_432.png)
+![png](output_55_432.png)
 
 
 
-![png](output_36_433.png)
+![png](output_55_433.png)
 
 
 
-![png](output_36_434.png)
+![png](output_55_434.png)
 
 
 
-![png](output_36_435.png)
+![png](output_55_435.png)
 
 
 
-![png](output_36_436.png)
+![png](output_55_436.png)
 
 
 
-![png](output_36_437.png)
+![png](output_55_437.png)
 
 
 
-![png](output_36_438.png)
+![png](output_55_438.png)
 
 
 
-![png](output_36_439.png)
+![png](output_55_439.png)
 
 
 
-![png](output_36_440.png)
+![png](output_55_440.png)
 
 
 
-![png](output_36_441.png)
+![png](output_55_441.png)
 
 
 
-![png](output_36_442.png)
+![png](output_55_442.png)
 
 
 
-![png](output_36_443.png)
+![png](output_55_443.png)
 
 
 
-![png](output_36_444.png)
+![png](output_55_444.png)
 
 
 
-![png](output_36_445.png)
+![png](output_55_445.png)
 
 
 
-![png](output_36_446.png)
+![png](output_55_446.png)
 
 
 
-![png](output_36_447.png)
+![png](output_55_447.png)
 
 
 
-![png](output_36_448.png)
+![png](output_55_448.png)
 
 
 
-![png](output_36_449.png)
+![png](output_55_449.png)
 
 
 
-![png](output_36_450.png)
+![png](output_55_450.png)
 
 
 
-![png](output_36_451.png)
+![png](output_55_451.png)
 
 
 
-![png](output_36_452.png)
+![png](output_55_452.png)
 
 
 
-![png](output_36_453.png)
+![png](output_55_453.png)
 
 
 
-![png](output_36_454.png)
+![png](output_55_454.png)
 
 
 
-![png](output_36_455.png)
+![png](output_55_455.png)
 
 
 
-![png](output_36_456.png)
+![png](output_55_456.png)
 
 
 
-![png](output_36_457.png)
+![png](output_55_457.png)
 
 
 
-![png](output_36_458.png)
+![png](output_55_458.png)
 
 
 
-![png](output_36_459.png)
+![png](output_55_459.png)
 
 
 
-![png](output_36_460.png)
+![png](output_55_460.png)
 
 
 
-![png](output_36_461.png)
+![png](output_55_461.png)
 
 
 
-![png](output_36_462.png)
+![png](output_55_462.png)
 
 
 
-![png](output_36_463.png)
+![png](output_55_463.png)
 
 
 
-![png](output_36_464.png)
+![png](output_55_464.png)
 
 
 
-![png](output_36_465.png)
+![png](output_55_465.png)
 
 
 
-![png](output_36_466.png)
+![png](output_55_466.png)
 
 
 
-![png](output_36_467.png)
+![png](output_55_467.png)
 
 
 
-![png](output_36_468.png)
+![png](output_55_468.png)
 
 
 
-![png](output_36_469.png)
+![png](output_55_469.png)
 
 
 
-![png](output_36_470.png)
+![png](output_55_470.png)
 
 
 
-![png](output_36_471.png)
+![png](output_55_471.png)
 
 
 
-![png](output_36_472.png)
+![png](output_55_472.png)
 
 
 
-![png](output_36_473.png)
+![png](output_55_473.png)
 
 
 
-![png](output_36_474.png)
+![png](output_55_474.png)
 
 
 
-![png](output_36_475.png)
+![png](output_55_475.png)
 
 
 
-![png](output_36_476.png)
+![png](output_55_476.png)
 
 
 
-![png](output_36_477.png)
+![png](output_55_477.png)
 
 
 
-![png](output_36_478.png)
+![png](output_55_478.png)
 
 
 
-![png](output_36_479.png)
+![png](output_55_479.png)
 
 
 
-![png](output_36_480.png)
+![png](output_55_480.png)
 
 
 
-![png](output_36_481.png)
+![png](output_55_481.png)
 
 
 
-![png](output_36_482.png)
+![png](output_55_482.png)
 
 
 
-![png](output_36_483.png)
+![png](output_55_483.png)
 
 
 
-![png](output_36_484.png)
+![png](output_55_484.png)
 
 
 
-![png](output_36_485.png)
+![png](output_55_485.png)
 
 
 
-![png](output_36_486.png)
+![png](output_55_486.png)
 
 
 
-![png](output_36_487.png)
+![png](output_55_487.png)
 
 
 
-![png](output_36_488.png)
+![png](output_55_488.png)
 
 
 
-![png](output_36_489.png)
+![png](output_55_489.png)
 
 
 
-![png](output_36_490.png)
+![png](output_55_490.png)
 
 
 
-![png](output_36_491.png)
+![png](output_55_491.png)
 
 
 
-![png](output_36_492.png)
+![png](output_55_492.png)
 
 
 
-![png](output_36_493.png)
+![png](output_55_493.png)
 
 
 
-![png](output_36_494.png)
+![png](output_55_494.png)
 
 
 
-![png](output_36_495.png)
+![png](output_55_495.png)
 
 
 
-![png](output_36_496.png)
+![png](output_55_496.png)
 
 
 
-![png](output_36_497.png)
+![png](output_55_497.png)
 
 
 
-![png](output_36_498.png)
+![png](output_55_498.png)
 
 
 
-![png](output_36_499.png)
+![png](output_55_499.png)
 
 
 
-![png](output_36_500.png)
+![png](output_55_500.png)
 
 
 
-![png](output_36_501.png)
+![png](output_55_501.png)
 
 
 
-![png](output_36_502.png)
+![png](output_55_502.png)
 
 
 
-![png](output_36_503.png)
+![png](output_55_503.png)
 
 
 
-![png](output_36_504.png)
+![png](output_55_504.png)
 
 
 
-![png](output_36_505.png)
+![png](output_55_505.png)
 
 
 
-![png](output_36_506.png)
+![png](output_55_506.png)
 
 
 
-![png](output_36_507.png)
+![png](output_55_507.png)
 
 
 
-![png](output_36_508.png)
+![png](output_55_508.png)
 
 
 
-![png](output_36_509.png)
+![png](output_55_509.png)
 
 
 
-![png](output_36_510.png)
+![png](output_55_510.png)
 
 
 
-![png](output_36_511.png)
+![png](output_55_511.png)
 
 
 
-![png](output_36_512.png)
+![png](output_55_512.png)
 
 
 
-![png](output_36_513.png)
+![png](output_55_513.png)
 
 
 
-![png](output_36_514.png)
+![png](output_55_514.png)
 
 
 
-![png](output_36_515.png)
+![png](output_55_515.png)
 
 
 
-![png](output_36_516.png)
+![png](output_55_516.png)
 
 
 
-![png](output_36_517.png)
+![png](output_55_517.png)
 
 
 
-![png](output_36_518.png)
+![png](output_55_518.png)
 
 
 
-![png](output_36_519.png)
+![png](output_55_519.png)
 
 
 
-![png](output_36_520.png)
+![png](output_55_520.png)
 
 
 
-![png](output_36_521.png)
+![png](output_55_521.png)
 
 
 
-![png](output_36_522.png)
+![png](output_55_522.png)
 
 
 
-![png](output_36_523.png)
+![png](output_55_523.png)
 
 
 
-![png](output_36_524.png)
+![png](output_55_524.png)
 
 
 
-![png](output_36_525.png)
+![png](output_55_525.png)
 
 
 
-![png](output_36_526.png)
+![png](output_55_526.png)
 
 
 
-![png](output_36_527.png)
+![png](output_55_527.png)
 
 
 
-![png](output_36_528.png)
+![png](output_55_528.png)
 
 
 
@@ -2801,7 +3428,7 @@ ggplot(duda, aes(faixa_etaria, genero)) +
 ```
 
 
-![png](output_37_0.png)
+![png](output_56_0.png)
 
 
 
