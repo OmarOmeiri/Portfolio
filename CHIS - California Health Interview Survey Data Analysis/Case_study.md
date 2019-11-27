@@ -1,6 +1,6 @@
 
 # CHIS - Exploratory Analysis
-## *Subtitle*
+
 *Omar El Omeiri Filho, 2019*
 
 ---
