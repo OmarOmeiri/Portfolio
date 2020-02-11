@@ -1,6 +1,6 @@
 
 # CHIS - Exploratory Analysis
-
+## *Subtitle*
 *Omar El Omeiri Filho, 2019*
 
 ---
@@ -111,7 +111,7 @@ opts <- options()
     
         combine
     
-
+    
 
 ## 3 - Data  <a class='anchor' id='dat'></a>
 
@@ -186,7 +186,9 @@ chis_filtered <- chis_filtered[,c('gen_health', 'has_asthma', 'has_diabetes', 'e
 ```R
 
 ```
+
 ### 3.2 - Data Eyeballing<a class='anchor' id='data_eye'></a>
+
 
 ```R
 head(chis_filtered)
@@ -234,7 +236,7 @@ str(chis_filtered)
      $ curr_life_satisf     : num  9 8 2 6 5 10 7 6 7 8 ...
      $ future_life_satisf   : num  10 8 2 6 8 8 7 8 7 8 ...
      $ depressed_30days     : num  5 5 4 4 4 5 5 3 4 5 ...
-
+    
 
 ### 3.3 - Summary Statistics<a class='anchor' id='sum_stat'></a>
 
@@ -292,11 +294,14 @@ t(summ)
 
 
 
-<font size = '1'>From this plot, we can see that not a lot of features are strongly correlated to our outcome variables.<br>
-But it is worth commenting that perceived general health and perceived financial satisfaction play a major role in ones life quality.<br>
-I was hoping marijuana and cigarrete usage would play a role also, but we'll investigate further</font>
+
 
 ### 3.4 - Correlation Matrix<a class-='anchor' id='cor_mat'></a>
+
+
+<font size = '4'>From this plot, we can see that not a lot of features are strongly correlated to our outcome variables.<br>
+But it is worth commenting that perceived general health and perceived financial satisfaction play a major role in ones life quality.<br>
+I was hoping marijuana and cigarrete usage would play a role also, but we'll investigate further</font>
 
 
 ```R
@@ -404,7 +409,7 @@ ggplot(chis_filtered, aes(x = age)) +
 
 ### 4.1.1 Age vs Depression <a class='anchor' id='age_depr'></a>
 
-<font size='1'> In these plots below, we se a small trend between age and depression, younger people tend to be more depressed.<br></font>
+<font size='4'> In these plots below, we se a small trend between age and depression, younger people tend to be more depressed.<br></font>
 
 H0: Depression is equal for all ages, meaning independence<br>
 H1: Depression is not equal for all ages, meaning they are dependent on each other<br>
@@ -447,7 +452,7 @@ mosaic(chis_filtered, 'depressed_30days', 'age')
     data:  table(data[[FILL]], data[[X]])
     X-squared = 508.38, df = 65, p-value < 2.2e-16
     
-
+    
 
 
 ![png](output_30_1.png)
@@ -456,7 +461,7 @@ mosaic(chis_filtered, 'depressed_30days', 'age')
 
 ### 4.1.2 - Age vs Future life satifaction<a class='anchor' id='age_fut'></a>
 
-<font size='1'> In these plots below, we se a small trend between age and depression, very young people tend to be less satisfied than middle agers, but from then on, there is a decrease in future life satisfaction as age increases.<br></font>
+<font size='4'> In these plots below, we se a small trend between age and depression, very young people tend to be less satisfied than middle agers, but from then on, there is a decrease in future life satisfaction as age increases.<br></font>
 
 H0: Future life satisfaction is equal for all ages, meaning independence<br>
 H1: Future life satisfaction is not equal for all ages, meaning they are dependent on each other<br>
@@ -500,7 +505,7 @@ mosaic(chis_filtered, 'future_life_satisf', 'age')
     data:  table(data[[FILL]], data[[X]])
     X-squared = 1473.2, df = 130, p-value < 2.2e-16
     
-
+    
 
 
 ![png](output_33_1.png)
@@ -508,7 +513,7 @@ mosaic(chis_filtered, 'future_life_satisf', 'age')
 
 ### 4.1.3 - Age vs Current life satisfaction<a class='anchor' id='age_curr'></a>
 
-<font size='1'> In these plots below, we se a positive correlation  between age and current life satisfaction, younger people tend to be less satisfied.<br></font>
+<font size='4'> In these plots below, we se a positive correlation  between age and current life satisfaction, younger people tend to be less satisfied.<br></font>
 
 H0: Current life satisfaction is equal for all ages, meaning independence<br>
 H1: Current life satisfaction is not equal for all ages, meaning they are dependent on each other<br>
@@ -552,7 +557,7 @@ mosaic(chis_filtered, 'curr_life_satisf', 'age')
     data:  table(data[[FILL]], data[[X]])
     X-squared = 1795.5, df = 130, p-value < 2.2e-16
     
-
+    
 
 
 ![png](output_36_1.png)
@@ -561,7 +566,7 @@ mosaic(chis_filtered, 'curr_life_satisf', 'age')
 ### 4.1.4 Age vs General health<a class='anchor' id='age_health'></a>
 
 
-<font size='1'> In these plots below, we se a very small positive linear dependency between age and current general health, younger people tend to perceive themselves as less healthy.<br></font>
+<font size='4'> In these plots below, we se a very small positive linear dependency between age and current general health, younger people tend to perceive themselves as less healthy.<br></font>
 
 I'll not perfom a chi-squared test here, because the dependency is almost negligible.
 
@@ -589,7 +594,7 @@ grid.arrange(p1, p2, nrow = 1)
 
 
 ### 4.2 - Smoking Habits<a class='anchor' id='smok'></a>
-<font size='1'>There are too few smokers for us to make meaningful inferences.</font>
+<font size='4'>There are too few smokers for us to make meaningful inferences.</font>
 
 ### Cigarette
 
@@ -656,7 +661,7 @@ grid.arrange(p1, p2, nrow = 1)
 
 ### 4.2.1 - Smoking vs Depression<a class='anchor' id='smok_depr'></a>
 
-<font size='1'> Cigarettes can play some role in increasing depression. Again, smokers are very under-represented in our data, but still.<br></font>
+<font size='4'> Cigarettes can play some role in increasing depression. Again, smokers are very under-represented in our data, but still.<br></font>
 
 H0: Being a smoker does not affect depression<br>
 H1: Being a smoker plays a role in depression<br>
@@ -714,7 +719,7 @@ grid.arrange(p1, p2, nrow = 1)
     data:  table(data[[FILL]], data[[X]])
     X-squared = 149.54, df = 5, p-value < 2.2e-16
     
-
+    
 
 
 ![png](output_46_1.png)
@@ -722,7 +727,7 @@ grid.arrange(p1, p2, nrow = 1)
 
 ### 4.2.2 - Smoking vs Future Life Satisfaction<a class='anchor' id='smok_fut'></a>
 
-<font size='1'> Looks like noise to me.</font>
+<font size='4'> Looks like noise to me.</font>
 
 
 ```R
@@ -773,7 +778,7 @@ grid.arrange(p1,p2, p3, p4, p5, p6, nrow = 2)
 
 ### 4.2.3 - Smoking vs Current life satisfaction<a class='anchor' id='curr_depr'></a>
 
-<font size = '1'>Here we see that smokers tend to be less satisfied with their lives, as expected, since cigarette users have a higher rate of depression.<br>
+<font size = '4'>Here we see that smokers tend to be less satisfied with their lives, as expected, since cigarette users have a higher rate of depression.<br>
 Also, the proportion of smokers is much higher in the low end of satisfaction level.<br>
 We can sucessfully reject the null Hypothesis and claim that smoking has an effect of perceived life satisfaction.</font>
 
@@ -841,7 +846,7 @@ grid.arrange(p1, p2, nrow = 1)
     data:  table(data[[FILL]], data[[X]])
     X-squared = 159.28, df = 10, p-value < 2.2e-16
     
-
+    
 
 
 ![png](output_51_1.png)
@@ -849,7 +854,7 @@ grid.arrange(p1, p2, nrow = 1)
 
 ### 4.2.4 - Smoking vs. General health<a class='anchor' id='smok_health'></a>
 
-<font size = '2'> Cigarette consumption seems to affect general health negatively, as expected. <br>
+<font size = '4'> Cigarette consumption seems to affect general health negatively, as expected. <br>
 ---
 H0: Cigarrete consumption has no effect on general health<br>
 H1: Cigarette plays a role in general health<br>
@@ -919,7 +924,7 @@ grid.arrange(p1, p2, nrow = 1)
     data:  table(data[[FILL]], data[[X]])
     X-squared = 21.366, df = 16, p-value = 0.1648
     
-
+    
 
 
 ![png](output_54_1.png)
@@ -927,7 +932,7 @@ grid.arrange(p1, p2, nrow = 1)
 
 ### 4.2.5 - Cigarette usage vs. ER in the last 12 months<a class='anchor' id='smok_er'></a>
 
-<font size = '1'>In this plot below, we notice that smokers show up in the ER more often than non-smokers.</font>
+<font size = '4'>In this plot below, we notice that smokers show up in the ER more often than non-smokers.</font>
 
 
 ```R
@@ -995,7 +1000,7 @@ grid.arrange(p1, p2, nrow = 1)
     data:  table(data[[FILL]], data[[X]])
     X-squared = 28.748, df = 8, p-value = 0.000351
     
-
+    
 
 
 ![png](output_57_1.png)
@@ -1003,7 +1008,7 @@ grid.arrange(p1, p2, nrow = 1)
 
 ### 4.2.6 - Cigarette usage vs. Asthma<a class='anchor' id='smok_asthma'></a>
 
-<font size = '1'>Oddly, in these data people who smoke show only a slight higher rate of asthma, but we cannot make this claim as we were unable to reject the null hypothesis.</font>
+<font size = '4'>Oddly, in these data people who smoke show only a slight higher rate of asthma, but we cannot make this claim as we were unable to reject the null hypothesis.</font>
 
 
 ```R
@@ -1072,7 +1077,7 @@ grid.arrange(p1, p2, nrow = 1)
     data:  table(data[[FILL]], data[[X]])
     X-squared = 8.9722, df = 4, p-value = 0.0618
     
-
+    
 
 
 ![png](output_60_1.png)
@@ -1080,7 +1085,7 @@ grid.arrange(p1, p2, nrow = 1)
 
 ### 4.2.7 - Cigarette usage vs. Diabetes<a class='anchor' id='smok_diab'></a>
 
-<font size = '1'>Cigarette smokers don't show different levels of diabetes, but E-cig smokers show lower incidence of diabetes, that is strange, maybe E-cig smoker are younger. Let's check it below.</font>
+<font size = '4'>Cigarette smokers don't show different levels of diabetes, but E-cig smokers show lower incidence of diabetes, that is strange, maybe E-cig smoker are younger. Let's check it below.</font>
 
 
 ```R
@@ -1148,7 +1153,7 @@ grid.arrange(p1, p2, nrow = 1)
     data:  table(data[[FILL]], data[[X]])
     X-squared = 43.229, df = 8, p-value = 7.953e-07
     
-
+    
 
 
 ![png](output_63_1.png)
@@ -1156,7 +1161,7 @@ grid.arrange(p1, p2, nrow = 1)
 
 ### 4.2.8 - E-cig smoker vs. Age<a class='anchor' id='ecig_age'></a>
 
-<font size='1'>As suspected, lower levels of diabetes in E-cig smokers might be caused their younger age.</font>
+<font size='4'>As suspected, lower levels of diabetes in E-cig smokers might be caused their younger age.</font>
 
 
 ```R
@@ -1193,7 +1198,7 @@ mosaic(chis_filtered, 'ecig_usage_30days', 'age')
     data:  table(data[[FILL]], data[[X]])
     X-squared = 1140.5, df = 52, p-value < 2.2e-16
     
-
+    
 
 
 ![png](output_66_1.png)
@@ -1216,7 +1221,7 @@ mosaic(chis_filtered, 'ecig_usage_30days', 'age')
 
 ## 4.3 - Marijuana<a class='anchor' id='mj'></a>
 
-<font size='1'> As for cigarette smoking, marijuana smokers are very under-represented so all claims cannot be made with a very high level of certainty.</font>
+<font size='4'> As for cigarette smoking, marijuana smokers are very under-represented so all claims cannot be made with a very high level of certainty.</font>
 
 
 ```R
@@ -1252,7 +1257,7 @@ grid.arrange(p1, p2, nrow = 1)
 
 ### 4.3.1 - Marijuana vs. Depression<a class='anchor' id='mj_depr'></a>
 
-<font size='1'>We can reject the null hypothesis, meaning that marijuana plays a role in depression, but marijuana smokers are very under-represented as more than 97% of the people interviewed don't smoke it.<br>
+<font size='4'>We can reject the null hypothesis, meaning that marijuana plays a role in depression, but marijuana smokers are very under-represented as more than 97% of the people interviewed don't smoke it.<br>
 We cannot say why marijuana users show a higher rate of depression, experimantation is needed. Marijuana can increase depression as well as people who are already depressive might be more inclined to smoke marijuana.</font>
 
 
@@ -1298,7 +1303,7 @@ mosaic(chis_filtered, 'freq_marijuana_30days', 'depressed_30days')
     data:  table(data[[FILL]], data[[X]])
     X-squared = 240.44, df = 35, p-value < 2.2e-16
     
-
+    
 
 
 ![png](output_74_1.png)
@@ -1306,7 +1311,7 @@ mosaic(chis_filtered, 'freq_marijuana_30days', 'depressed_30days')
 
 ### 4.3.2 - Marijuana vs. Future life satisfaction<a class='anchor' id='mj_fut'></a>
 
-<font size='1'>It seems that marijuana smokers are a bit more optimistic regarding their future lives.<br>
+<font size='4'>It seems that marijuana smokers are a bit more optimistic regarding their future lives.<br>
 This statement can be backed up by the chi-squared test below.</font>
 
 
@@ -1361,7 +1366,7 @@ grid.arrange(p1, p2, nrow = 1)
     data:  table(data[[FILL]], data[[X]])
     X-squared = 73.871, df = 10, p-value = 7.888e-12
     
-
+    
 
 
 ![png](output_77_1.png)
@@ -1370,7 +1375,7 @@ grid.arrange(p1, p2, nrow = 1)
 ### 4.3.3 - Marijuana vs. Current life satisfaction<a class='anchor' id='mj_curr'></a>
 
 
-<font size='1'>While marijuana smokers seem to be more optimistic regarding the future, they are not as happy about the present. We see that marijuana smokers are less satisfied with their current lives as non-smokers.<br> But maybe there is another variable causing this impact. Do marijuana smokers work less? What about their age? We'll answer these questions below.</font>
+<font size='4'>While marijuana smokers seem to be more optimistic regarding the future, they are not as happy about the present. We see that marijuana smokers are less satisfied with their current lives as non-smokers.<br> But maybe there is another variable causing this impact. Do marijuana smokers work less? What about their age? We'll answer these questions below.</font>
 
 
 ```R
@@ -1415,7 +1420,7 @@ p1
     data:  table(data[[FILL]], data[[X]])
     X-squared = 323.44, df = 70, p-value < 2.2e-16
     
-
+    
 
 
 ![png](output_80_1.png)
@@ -1423,7 +1428,7 @@ p1
 
 ### 4.3.4 - Marijuana vs. Workload<a class='anchor' id='mj_work'></a>
 
-<font>It looks like marijuana smokers actually work more than non-smokers, but that may also be affected by age. We'll investigate it next. </font>
+<font size='4'>It looks like marijuana smokers actually work more than non-smokers, but that may also be affected by age. We'll investigate it next. </font>
 
 
 ```R
@@ -1464,7 +1469,7 @@ mosaic(chis_filtered, 'weekly_work', 'freq_marijuana_30days')
     data:  table(data[[FILL]], data[[X]])
     X-squared = 470.97, df = 70, p-value < 2.2e-16
     
-
+    
 
 
 ![png](output_83_1.png)
@@ -1472,7 +1477,7 @@ mosaic(chis_filtered, 'weekly_work', 'freq_marijuana_30days')
 
 ### 4.3.5 - Marijuana vs. Age<a class='anchor' id='mj_age'></a>
 
-<font size='2'>This might be the source of such a low current life satisfaction among marijuana smokers. I double checked this and all marijuana smokers fall in the 18-25 age category, maybe this survey was biased somehow. </font>
+<font size='4'>This might be the source of such a low current life satisfaction among marijuana smokers. I double checked this and all marijuana smokers fall in the 18-25 age category, maybe this survey was biased somehow. </font>
 
 
 ```R
@@ -1528,7 +1533,7 @@ grid.arrange(p1, p2, p3, nrow = 1)
 
 ### 4.3.6 - Marijuana vs. General health<a class='anchor' id='mj_health'></a>
 
-<font size = '2'> Marijuana consumption seems to have a minor positive effect on perceived general health. <br>
+<font size = '4'> Marijuana consumption seems to have a minor positive effect on perceived general health. <br>
 Looking at the chi-squared test below, we cannot reject the null hypothesis, thus we cannot state this as a fact.</font>
 
 
@@ -1575,7 +1580,7 @@ p1
     data:  table(data[[FILL]], data[[X]])
     X-squared = 36.597, df = 28, p-value = 0.128
     
-
+    
 
 
 ![png](output_93_1.png)
@@ -1583,7 +1588,7 @@ p1
 
 ### 4.3.7 - Marijuana usage vs. ER in the last 12 months<a class='anchor' id='mj_er'></a>
 
-<font size = '1'> Marijuana smokers tend to show up in the ER less often than non smokers, we cannot claim why, but we can safely say that there is a relation between smoking marijuana and going to the ER, as confirmed by the chi_squared test below.</font>
+<font size = '4'> Marijuana smokers tend to show up in the ER less often than non smokers, we cannot claim why, but we can safely say that there is a relation between smoking marijuana and going to the ER, as confirmed by the chi_squared test below.</font>
 
 
 ```R
@@ -1638,7 +1643,7 @@ grid.arrange(p1, p2, nrow = 1)
     data:  table(data[[FILL]], data[[X]])
     X-squared = 28.627, df = 2, p-value = 6.078e-07
     
-
+    
 
 
 ![png](output_96_1.png)
@@ -1646,7 +1651,7 @@ grid.arrange(p1, p2, nrow = 1)
 
 ### 4.2.8 - Marijuana usage vs. Asthma<a class='anchor' id='mj_asthma'></a>
 
-<font size = '1'>Marijuana users have a higher chance of having asthma. The test below rejects the null hypothesis.</font>
+<font size = '4'>Marijuana users have a higher chance of having asthma. The test below rejects the null hypothesis.</font>
 
 
 ```R
@@ -1701,7 +1706,7 @@ grid.arrange(p1, p2, nrow = 1)
     data:  table(data[[FILL]], data[[X]])
     X-squared = 30.255, df = 1, p-value = 3.787e-08
     
-
+    
 
 
 ![png](output_99_1.png)
@@ -1709,7 +1714,7 @@ grid.arrange(p1, p2, nrow = 1)
 
 ### 4.3.9 - Marijuana vs. Diabetes<a class='anchor' id='mj_diab'></a>
 
-<font size='1'>It seems that marijuana users show less signs of diabetes.</font>
+<font size='4'>It seems that marijuana users show less signs of diabetes.</font>
 
 
 ```R
@@ -1763,7 +1768,7 @@ grid.arrange(p1, p2, nrow = 1)
     data:  table(data[[FILL]], data[[X]])
     X-squared = 94.964, df = 2, p-value < 2.2e-16
     
-
+    
 
 
 ![png](output_102_1.png)
@@ -1771,7 +1776,7 @@ grid.arrange(p1, p2, nrow = 1)
 
 ## 4.4 - Weekly working hours<a class='anchor' id='work'></a>
 
-<font size='2'>As expected, older people tend to work less.</font>
+<font size='4'>As expected, older people tend to work less.</font>
 
 
 ```R
@@ -1806,14 +1811,14 @@ mosaic(chis_filtered, 'age', 'weekly_work')
     data:  table(data[[FILL]], data[[X]])
     X-squared = 7980.8, df = 130, p-value < 2.2e-16
     
-
+    
 
 
 ![png](output_105_1.png)
 
 
 ### 4.4.1 - Weekly work vs. Depression<a class='anchor' id='work_depr'></a>
-<font size='1'>From these plots we notice that work has a positive effect on depression up to a point. Above this "healthy" number of work hours work has a negative effect, increasing depression levels.</font>
+<font size='4'>From these plots we notice that work has a positive effect on depression up to a point. Above this "healthy" number of work hours work has a negative effect, increasing depression levels.</font>
 
 
 ```R
@@ -1855,7 +1860,7 @@ mosaic(chis_filtered, 'weekly_work', 'depressed_30days')
     data:  table(data[[FILL]], data[[X]])
     X-squared = 198.51, df = 50, p-value < 2.2e-16
     
-
+    
 
 
 ![png](output_108_1.png)
@@ -1863,7 +1868,7 @@ mosaic(chis_filtered, 'weekly_work', 'depressed_30days')
 
 ### 4.4.2 - Weekly work vs. Future life satisfaction<a class='anchor' id='work_fut'></a>
 
-<font size='1'>More work translates into higher future satisfaction expectancies.</font>
+<font size='4'>More work translates into higher future satisfaction expectancies.</font>
 
 
 ```R
@@ -1909,14 +1914,14 @@ mosaic(chis_filtered, 'weekly_work', 'future_life_satisf')
     data:  table(data[[FILL]], data[[X]])
     X-squared = 1177.5, df = 100, p-value < 2.2e-16
     
-
+    
 
 
 ![png](output_111_1.png)
 
 
 ### 4.4.3 - Weekly work vs. Current life satisfaction<a class='anchor' id='work_curr'></a>
-<font size='2'>More work makes people a little less satisfied with their current lives, but in contrast  makes them hope for a better future, which seems intuitive.</font>
+<font size='4'>More work makes people a little less satisfied with their current lives, but in contrast  makes them hope for a better future, which seems intuitive.</font>
 
 
 ```R
@@ -1959,7 +1964,7 @@ p1
     data:  table(data[[FILL]], data[[X]])
     X-squared = 884.6, df = 100, p-value < 2.2e-16
     
-
+    
 
 
 ![png](output_114_1.png)
@@ -1967,7 +1972,7 @@ p1
 
 ### 4.4.4 - Weekly work vs. General health<a class='anchor' id='work_health'></a>
 
-<font size = '1'>Here we can see that an increase in workload is positively correlated with general health, up to a level. When someone works more than a healthy limit, some health problems might arise. </font>
+<font size = '4'>Here we can see that an increase in workload is positively correlated with general health, up to a level. When someone works more than a healthy limit, some health problems might arise. </font>
 
 
 ```R
@@ -2010,7 +2015,7 @@ p1
     data:  table(data[[FILL]], data[[X]])
     X-squared = 1063.2, df = 40, p-value < 2.2e-16
     
-
+    
 
 
 ![png](output_117_1.png)
@@ -2018,7 +2023,7 @@ p1
 
 ### 4.4.5 - Weekly work vs. ER in the last 12 months<a class='anchor' id='work_er'></a>
 
-<font size = '1'>Again we notice that working has a positive effect, but too much work causes people to show more often in the ER.</font>
+<font size = '4'>Again we notice that working has a positive effect, but too much work causes people to show more often in the ER.</font>
 
 
 ```R
@@ -2063,7 +2068,7 @@ mosaic(chis_filtered, 'weekly_work', 'ER_12mo')
     data:  table(data[[FILL]], data[[X]])
     X-squared = 210.22, df = 20, p-value < 2.2e-16
     
-
+    
 
 
 ![png](output_120_1.png)
@@ -2071,7 +2076,7 @@ mosaic(chis_filtered, 'weekly_work', 'ER_12mo')
 
 ### 4.4.6 - Weekly work vs. Diabetes<a class='anchor' id='work_diab'></a>
 
-<font size='1'> Diabetes rates stay constant at different leves of workload. People who don't work show higher rates of diabetes, but there are a lot of elderly people in this category, that might be the source of it.</font>
+<font size='4'> Diabetes rates stay constant at different leves of workload. People who don't work show higher rates of diabetes, but there are a lot of elderly people in this category, that might be the source of it.</font>
 
 
 ```R
@@ -2113,7 +2118,7 @@ mosaic(chis_filtered, 'weekly_work', 'has_diabetes')
     data:  table(data[[FILL]], data[[X]])
     X-squared = 599.81, df = 20, p-value < 2.2e-16
     
-
+    
 
 
 ![png](output_123_1.png)
@@ -2140,7 +2145,7 @@ mosaic(chis_filtered, 'weekly_work', 'has_diabetes')
 ```
 
 ### 4.5 - BMI<a class='anchor' id='bmi'></a>
-<font size='2'>Middle-aged adults are the most over-weight.</font>
+<font size='4'>Middle-aged adults are the most over-weight.</font>
 
 
 ```R
@@ -2171,7 +2176,7 @@ mosaic(chis_filtered, 'bmi_cat', 'age')
     data:  table(data[[FILL]], data[[X]])
     X-squared = 758.86, df = 39, p-value < 2.2e-16
     
-
+    
 
 
 ![png](output_130_1.png)
@@ -2208,7 +2213,7 @@ ggplot(age_bmi_freq, aes(x = age, y = prop, fill = bmi_cat)) +
 
 ### 4.5.1 - BMI vs. Depression<a class='anchor' id='bmi_depr'></a>
 
-<font size='2'>Under-weight and Obese people tend to be a little more affected by depression.</font>
+<font size='4'>Under-weight and Obese people tend to be a little more affected by depression.</font>
 
 
 ```R
@@ -2250,7 +2255,7 @@ mosaic(chis_filtered, 'bmi_cat', 'depressed_30days')
     data:  table(data[[FILL]], data[[X]])
     X-squared = 96.339, df = 15, p-value = 6.42e-14
     
-
+    
 
 
 ![png](output_134_1.png)
@@ -2303,14 +2308,14 @@ mosaic(chis_filtered, 'bmi_cat', 'future_life_satisf')
     data:  table(data[[FILL]], data[[X]])
     X-squared = 127.4, df = 30, p-value = 5.745e-14
     
-
+    
 
 
 ![png](output_137_1.png)
 
 
 ### 4.5.3 - BMI vs. Current life satisfaction<a class='anchor' id='bmi_curr'></a>
-<font size='2'>Looks like Under-weights and obese people are a bit less satisfied with their current lives.</font>
+<font size='4'>Looks like Under-weights and obese people are a bit less satisfied with their current lives.</font>
 
 
 ```R
@@ -2352,7 +2357,7 @@ mosaic(chis_filtered, 'bmi_cat', 'curr_life_satisf')
     data:  table(data[[FILL]], data[[X]])
     X-squared = 222.97, df = 30, p-value < 2.2e-16
     
-
+    
 
 
 ![png](output_140_1.png)
@@ -2360,7 +2365,7 @@ mosaic(chis_filtered, 'bmi_cat', 'curr_life_satisf')
 
 ### 4.5.4 - BMI vs. General health<a class='anchor' id='bmi_health'></a>
 
-<font size = '2'>As weight increases, people perceive themselves less healthy. </font>
+<font size = '4'>As weight increases, people perceive themselves less healthy. </font>
 
 
 ```R
@@ -2402,7 +2407,7 @@ mosaic(chis_filtered, 'bmi_cat', 'gen_health')
     data:  table(data[[FILL]], data[[X]])
     X-squared = 1529.2, df = 12, p-value < 2.2e-16
     
-
+    
 
 
 ![png](output_143_1.png)
@@ -2410,7 +2415,7 @@ mosaic(chis_filtered, 'bmi_cat', 'gen_health')
 
 ### 4.5.5 - BMI vs. ER in the last 12 months<a class='anchor' id='bmi_er'></a>
 
-<font size = '2'>Obese people tend to show up in the emergency room a little bit more often.</font>
+<font size = '4'>Obese people tend to show up in the emergency room a little bit more often.</font>
 
 
 ```R
@@ -2455,7 +2460,7 @@ mosaic(chis_filtered, 'bmi_cat', 'ER_12mo')
     data:  table(data[[FILL]], data[[X]])
     X-squared = 111.5, df = 6, p-value < 2.2e-16
     
-
+    
 
 
 ![png](output_146_1.png)
@@ -2463,7 +2468,7 @@ mosaic(chis_filtered, 'bmi_cat', 'ER_12mo')
 
 ### 4.5.6 - BMI vs. Diabetes<a class='anchor' id='bmi_diab'></a>
 
-<font size='1'>As expected, as weight increases so does diabetes rates.</font>
+<font size='4'>As expected, as weight increases so does diabetes rates.</font>
 
 
 ```R
@@ -2505,7 +2510,7 @@ mosaic(chis_filtered, 'bmi_cat', 'has_diabetes')
     data:  table(data[[FILL]], data[[X]])
     X-squared = 850.56, df = 6, p-value < 2.2e-16
     
-
+    
 
 
 ![png](output_149_1.png)
